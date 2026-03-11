@@ -5,9 +5,9 @@ import Credentials from "next-auth/providers/credentials"
 const MOCK_USERS = [
   {
     id: "1",
-    name: "Admin",
-    email: "admin@cloudflax.com",
-    password: "admin123",
+    name: "José Guerrero",
+    email: "jose.guerrero@cloudflax.com",
+    password: "123456",
   },
   {
     id: "2",
