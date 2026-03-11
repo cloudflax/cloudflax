@@ -1,0 +1,32 @@
+## Agents — Cloudflax (Frontend)
+
+Este documento establece las directrices operativas que deben seguir los agentes de Cursor para garantizar la consistencia arquitectónica, la calidad del código y la velocidad de entrega.
+
+## Stack tecnológico
+
+- **Framework**: Next.js 16 (`next`)
+- **UI**: React 19 (`react`, `react-dom`)
+- **Lenguaje**: TypeScript
+- **Estilos**: Tailwind CSS 4
+- **Linting**: ESLint 9 + `eslint-config-next`
+
+## Reglas de Arquitectura y Componentes
+
+- **Jerarquía de Componentes**: Mantén componentes pequeños, atómicos y reutilizables.
+- **Server vs Client**:
+  - Usa **Server Components** por defecto para fetching de datos y SEO.
+  - Usa **Client Components** (`'use client'`) estrictamente para interactividad (hooks, eventos) o APIs del navegador.
+- **Type-Safety**: Define interfaces claras para todas las _props_. Prohibido usar `any`.
+- **Estilos**: Usa exclusivamente clases utilitarias de Tailwind 4. Respeta el sistema de diseño (tokens de color y espaciado).
+
+## Calidad y Experiencia de Usuario (UX)
+
+- **Estados de Carga**: Implementa siempre `loading.tsx` o esqueletos (skeletons) para procesos asíncronos.
+- **Manejo de Errores**: Usa Error Boundaries y muestra mensajes claros al usuario en caso de fallos de red.
+- **Accesibilidad (A11y)**: Usa elementos semánticos (main, nav, section) y atributos `aria-*` en componentes interactivos complejos.
+- **Validación Final**: Antes de entregar, verifica el código con `npm run lint` y `npm run build`.
+
+## Flujo de Comunicación
+
+- Explica los cambios en español de forma concisa.
+- Resume: **Qué** se cambió, **Por qué** (decisión técnica) y si hay pasos manuales (ej. `npm install`).
