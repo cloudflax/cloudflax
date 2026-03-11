@@ -1,24 +1,26 @@
 # Architecture — Cloudflax (Frontend)
 
-Documentación de la estructura, patrones y reglas de diseño del frontend.
+Documentación de la estructura, patrones y reglas de diseño del frontend. El proyecto está configurado manualmente (no proviene del scaffold de `create-next-app`).
 
 ---
 
 ## 1. Stack Tecnológico
 
-- **Framework**: Next.js 16 (App Router).
-- **UI Library**: React 19.
-- **Lenguaje**: TypeScript (Tipado estricto, prohibido el uso de `any`).
-- **Estilos**: Tailwind CSS 4 (Clases utilitarias exclusivamente).
+- **Framework**: Next.js 16 (App Router). Desarrollo con Turbopack (`next dev --turbopack`).
+- **UI**: React 19.
+- **Lenguaje**: TypeScript 5 (strict; prohibido `any`).
+- **Estilos**: Tailwind CSS 4 (clases utilitarias exclusivamente).
+- **Componentes/UI**: shadcn/ui, Radix UI, `next-themes` (tema claro/oscuro).
 - **Linting**: ESLint 9 + `eslint-config-next`.
+- **Imports**: Alias `@/*` apunta a la raíz del proyecto (ej. `@/components/ui/button`).
 
 ---
 
 ## 2. Estructura de Directorios
 
-- **`app/`**: Rutas, layouts, páginas y estados globales (loading/error).
-- **`components/`**: UI reutilizable; separación de presentación y lógica (containers).
-- **`lib/`**: Lógica de dominio, servicios de API y utilidades puras.
+- **`app/`**: Rutas (App Router), layouts, páginas, `loading.tsx` y `error.tsx`.
+- **`components/`**: UI reutilizable; `components/ui/` para primitivos (shadcn); separación presentación/lógica cuando aplique.
+- **`lib/`**: Utilidades (`utils.ts`), lógica de dominio y servicios de API.
 
 ---
 
@@ -41,6 +43,6 @@ Documentación de la estructura, patrones y reglas de diseño del frontend.
 
 ## 5. Workflow del Desarrollador
 
-1. **Localizar**: Identificar componentes y rutas mediante búsqueda semántica.
+1. **Localizar**: Identificar componentes y rutas (p. ej. búsqueda semántica o por `@/`).
 2. **Planear**: Proponer cambios con análisis de pros y contras.
-3. **Validar**: Ejecución de `npm run lint` y `npm run build` antes de finalizar.
+3. **Validar**: Ejecutar `npm run lint`, `npm run typecheck` y `npm run build` antes de finalizar.
