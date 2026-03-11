@@ -16,17 +16,18 @@ Este documento establece las directrices operativas que deben seguir los agentes
 - **Server vs Client**:
   - Usa **Server Components** por defecto para fetching de datos y SEO.
   - Usa **Client Components** (`'use client'`) estrictamente para interactividad (hooks, eventos) o APIs del navegador.
-- **Type-Safety**: Define interfaces claras para todas las _props_. Prohibido usar `any`.
+- **Type-Safety**: Define interfaces claras para todas las *props*. Prohibido usar `any`.
 - **Estilos**: Usa exclusivamente clases utilitarias de Tailwind 4. Respeta el sistema de diseño (tokens de color y espaciado).
 
 ## Calidad y Experiencia de Usuario (UX)
 
 - **Estados de Carga**: Implementa siempre `loading.tsx` o esqueletos (skeletons) para procesos asíncronos.
 - **Manejo de Errores**: Usa Error Boundaries y muestra mensajes claros al usuario en caso de fallos de red.
-- **Accesibilidad (A11y)**: Usa elementos semánticos (main, nav, section) y atributos `aria-*` en componentes interactivos complejos.
+- **Accesibilidad (A11y)**: Usa elementos semánticos (main, nav, section) y atributos `aria-`* en componentes interactivos complejos.
 - **Validación Final**: Antes de entregar, verifica el código con `npm run lint` y `npm run build`.
 
 ## Flujo de Comunicación
 
 - Explica los cambios en español de forma concisa.
 - Resume: **Qué** se cambió, **Por qué** (decisión técnica) y si hay pasos manuales (ej. `npm install`).
+
