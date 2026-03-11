@@ -10,6 +10,7 @@ Capacidades y conocimientos esperados para trabajar en este proyecto. El fronten
 - **Do not explain basic TypeScript/React syntax** — Asumir dominio de TS y React. Ir directo al punto.
 - **Focus on arquitectura, DX y UX** — Priorizar decisiones de diseño, patrones, accesibilidad y tradeoffs.
 - **Align with Next.js App Router** — Seguir convenciones modernas (server/client components, rutas, layouts).
+- **Follow feature-driven architecture** — Respetar la organización por dominios de negocio en `features/`.
 
 ---
 
@@ -30,8 +31,27 @@ El agente de IA debe dominar:
 | **Performance frontend**    | Code splitting, lazy loading cuando tiene sentido, evitar renders innecesarios (memoización razonable), cuidado con efectos costosos en client components                                      |
 | **Linting y calidad**       | ESLint 9, `eslint-config-next`, `npm run typecheck`, interpretación de reglas comunes, corrección de lints sin desactivar reglas salvo casos muy justificados                                  |
 | **Testing**                 | Tests de componentes con librería de testing de React (p. ej. React Testing Library), pruebas de rutas y comportamiento crítico, preferencia por tests orientados a comportamiento del usuario |
-| **Arquitectura**            | Organización por features/módulos, separación clara de UI pura vs lógica de datos, reutilización de componentes, evitar duplicación y acoplamiento fuerte                                      |
+| **Arquitectura**            | Organización feature-driven, separación clara de UI pura vs lógica de datos, reutilización de componentes, evitar imports cruzados entre features                                              |
 
+
+---
+
+## Feature-Driven Architecture
+
+El agente debe entender y respetar la arquitectura del proyecto:
+
+- **`features/`** contiene la lógica de negocio organizada por dominio (auth, dashboard, products, etc.).
+- Cada feature tiene sus propios `components/`, `actions/`, `hooks/`, `services/` y `types.ts`.
+- **`app/`** solo contiene routing y composición — las páginas importan desde `@/features/<nombre>/...`.
+- **`components/ui/`** son primitivos shadcn/ui generados por CLI — no se modifican manualmente.
+- **`components/shared/`** contiene componentes usados por 2+ features.
+- Un feature **nunca** importa directamente de otro feature. Si se necesita compartir, se mueve a global.
+
+Al crear código nuevo:
+
+1. Identificar a qué feature pertenece.
+2. Crear archivos dentro de `features/<nombre>/`.
+3. Si el código es compartido, ubicarlo en la carpeta global correspondiente.
 
 ---
 
@@ -45,7 +65,7 @@ Quien contribuya debe conocer:
 - **Diseño y UX básicas** — Layouts responsivos, jerarquía visual, formularios usables, feedback de carga/errores.
 - **Accesibilidad básica** — Navegación por teclado, etiquetas correctas en formularios, roles y `aria-*` cuando haga falta.
 - **Git** — Branching, commits claros, revisión de PRs, respeto a hooks/lint antes de merge.
-- **Docker / Devcontainer** — Uso básico del entorno de desarrollo si el proyecto lo requiere.
+- **Feature-driven architecture** — Saber ubicar código en el feature correcto y respetar las reglas de imports.
 
 ---
 
@@ -61,14 +81,13 @@ Tecnologías y prácticas del stack:
 | **TypeScript 5**                  | Tipado estático estricto en todo el código; `npm run typecheck`                                  |
 | **Tailwind CSS 4**                | Sistema de estilos principal mediante utilidades                                                 |
 | **shadcn/ui, Radix UI, next-themes** | Componentes UI y tema claro/oscuro                                                             |
+| **NextAuth.js v5**                | Autenticación (credentials, OAuth); configuración en `auth.ts`                                   |
 | **ESLint 9 + eslint-config-next** | Linter y reglas de estilo/consistencia específicas de Next                                       |
 | **Prettier**                      | Formato de código en `**/*.{ts,tsx}` (`npm run format`)                                          |
-| **Alias `@/*`**                   | Imports desde la raíz (ej. `@/components/ui/...`, `@/lib/...`)                                   |
+| **Alias `@/*`**                   | Imports desde la raíz (ej. `@/features/auth/...`, `@/components/ui/...`, `@/lib/...`)            |
 | **npm**                           | Gestor de paquetes y scripts (dev, build, lint, typecheck, format)                               |
-| **Devcontainer / Docker**         | Entorno de desarrollo aislado (si está configurado en el repo)                                   |
-| **Arquitectura feature-driven**   | Organización por dominios/funcionalidades, no solo por capas técnicas                            |
+| **Arquitectura feature-driven**   | Organización por dominios/funcionalidades en `features/`, no solo por capas técnicas             |
 | **Server Components por defecto** | Páginas y layouts como Server Components; Client Components solo cuando sea necesario            |
 
 
 ---
-

@@ -19,9 +19,34 @@ Todo centralizado, sin tener que preocuparse por servidores ni integraciones dis
 ## Stack técnico
 
 - **Next.js 16** (App Router) + **React 19**
-- **TypeScript** (strict)
+- **TypeScript 5** (strict)
 - **Tailwind CSS 4**
 - **shadcn/ui** + Radix UI
+- **NextAuth.js v5** (autenticación)
+
+## Estructura del proyecto
+
+El proyecto sigue una **arquitectura feature-driven**: cada dominio de negocio agrupa sus componentes, actions, hooks y tipos. Solo lo verdaderamente compartido vive en carpetas globales.
+
+```
+cloudflax/
+├── app/                  ← Routing y layouts (App Router)
+├── features/             ← Lógica de negocio por dominio
+│   ├── auth/             ← Autenticación (components, actions)
+│   ├── dashboard/        ← Panel de administración (components)
+│   ├── products/         ← Catálogo de productos (futuro)
+│   ├── orders/           ← Gestión de pedidos (futuro)
+│   └── cart/             ← Carrito de compras (futuro)
+├── components/           ← Componentes globales
+│   ├── ui/               ← Primitivos shadcn/ui
+│   └── shared/           ← Componentes compartidos entre features
+├── lib/                  ← Utilidades globales (utils, constants)
+├── hooks/                ← Hooks globales
+├── types/                ← Tipos compartidos entre features
+├── services/             ← Clientes API globales (futuro)
+├── auth.ts               ← Configuración NextAuth
+└── middleware.ts          ← Middleware de autenticación
+```
 
 ## Desarrollo
 
@@ -38,12 +63,16 @@ npm run build
 # Lint y typecheck
 npm run lint
 npm run typecheck
+
+# Formatear código
+npm run format
 ```
 
 ## Documentación del proyecto
 
-- [AGENTS.md](./AGENTS.md) — Directrices para agentes y desarrollo.
-- [ARCHITECTURE.md](./ARCHITECTURE.md) — Arquitectura y decisiones técnicas.
+- [AGENTS.md](./AGENTS.md) — Directrices para agentes de IA y desarrollo.
+- [ARCHITECTURE.md](./ARCHITECTURE.md) — Arquitectura, estructura y decisiones técnicas.
+- [SKILLS.md](./SKILLS.md) — Capacidades y conocimientos requeridos.
 
 ---
 

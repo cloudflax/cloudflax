@@ -7,7 +7,7 @@ import {
   LogOut,
 } from "lucide-react"
 import { auth } from "@/auth"
-import { logout } from "@/lib/actions"
+import { logout } from "@/features/auth/actions/auth"
 
 export default async function StoreLayout({
   children,

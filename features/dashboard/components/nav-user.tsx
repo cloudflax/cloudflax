@@ -29,7 +29,7 @@ import {
   BellIcon,
   LogOutIcon,
 } from "lucide-react"
-import { logout } from "@/lib/actions"
+import { logout } from "@/features/auth/actions/auth"
 
 function getInitials(name: string) {
   return name
