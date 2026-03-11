@@ -1,10 +1,22 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ShoppingBag, LogOut } from "lucide-react"
+import { ShoppingBag } from "lucide-react"
+import { auth } from "@/auth"
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const session = await auth()
+
   return (
     <>
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold">
+          Hola, {session?.user?.name ?? "Usuario"}
+        </h1>
+        <p className="text-muted-foreground">
+          Bienvenido al panel de administración.
+        </p>
+      </div>
+
       <div className="grid auto-rows-min gap-4 md:grid-cols-3">
         <div className="aspect-video rounded-xl bg-muted/50" />
         <div className="aspect-video rounded-xl bg-muted/50" />
@@ -17,12 +29,6 @@ export default function DashboardPage() {
           <Link href="/">
             <ShoppingBag className="mr-1.5 size-4" />
             Ir a la tienda
-          </Link>
-        </Button>
-        <Button variant="outline" size="sm" asChild>
-          <Link href="/login">
-            <LogOut className="mr-1.5 size-4" />
-            Cerrar sesión
           </Link>
         </Button>
       </div>

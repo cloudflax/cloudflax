@@ -1,12 +1,21 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ShoppingBag, LayoutDashboard, UserCircle } from "lucide-react"
+import {
+  ShoppingBag,
+  LayoutDashboard,
+  UserCircle,
+  LogOut,
+} from "lucide-react"
+import { auth } from "@/auth"
+import { logout } from "@/lib/actions"
 
-export default function StoreLayout({
+export default async function StoreLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const session = await auth()
+
   return (
     <div className="flex min-h-svh flex-col">
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -17,18 +26,40 @@ export default function StoreLayout({
           </Link>
 
           <nav className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/login">
-                <UserCircle className="mr-1.5 size-4" />
-                Iniciar sesión
-              </Link>
-            </Button>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/dashboard">
-                <LayoutDashboard className="mr-1.5 size-4" />
-                Dashboard
-              </Link>
-            </Button>
+            {session?.user ? (
+              <>
+                <span className="hidden text-sm text-muted-foreground sm:inline">
+                  {session.user.name}
+                </span>
+                <Button variant="ghost" size="sm" asChild>
+                  <Link href="/dashboard">
+                    <LayoutDashboard className="mr-1.5 size-4" />
+                    Dashboard
+                  </Link>
+                </Button>
+                <form action={logout}>
+                  <Button variant="ghost" size="sm" type="submit">
+                    <LogOut className="mr-1.5 size-4" />
+                    Cerrar sesión
+                  </Button>
+                </form>
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" size="sm" asChild>
+                  <Link href="/login">
+                    <UserCircle className="mr-1.5 size-4" />
+                    Iniciar sesión
+                  </Link>
+                </Button>
+                <Button variant="ghost" size="sm" asChild>
+                  <Link href="/dashboard">
+                    <LayoutDashboard className="mr-1.5 size-4" />
+                    Dashboard
+                  </Link>
+                </Button>
+              </>
+            )}
           </nav>
         </div>
       </header>
@@ -37,7 +68,10 @@ export default function StoreLayout({
 
       <footer className="border-t bg-muted/40">
         <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 px-4 py-8 text-center text-sm text-muted-foreground sm:px-6 lg:px-8">
-          <p>&copy; {new Date().getFullYear()} Cloudflax. Todos los derechos reservados.</p>
+          <p>
+            &copy; {new Date().getFullYear()} Cloudflax. Todos los derechos
+            reservados.
+          </p>
         </div>
       </footer>
     </div>
