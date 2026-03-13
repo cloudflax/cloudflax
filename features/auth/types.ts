@@ -1,3 +1,22 @@
+// ── Login ──
+
+export interface LoginRequest {
+  email: string
+  password: string
+}
+
+export interface LoginResponseData {
+  access_token: string
+  refresh_token: string
+  expires_at: string
+}
+
+export interface LoginResponse {
+  data: LoginResponseData
+}
+
+// ── Register ──
+
 export interface RegisterRequest {
   name: string
   email: string

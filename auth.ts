@@ -1,21 +1,13 @@
 import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
+import { loginUser } from "@/features/auth/services/auth"
+import { ApiError } from "@/lib/api-client"
 
-// Backend simulado — reemplazar con una API real en producción
-const MOCK_USERS = [
-  {
-    id: "1",
-    name: "José Guerrero",
-    email: "jose.guerrero@cloudflax.com",
-    password: "123456",
-  },
-  {
-    id: "2",
-    name: "Usuario Demo",
-    email: "demo@cloudflax.com",
-    password: "demo123",
-  },
-]
+function decodeJwtPayload(token: string): Record<string, unknown> {
+  const base64 = token.split(".")[1]
+  const json = Buffer.from(base64, "base64url").toString("utf-8")
+  return JSON.parse(json) as Record<string, unknown>
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
@@ -28,16 +20,45 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const user = MOCK_USERS.find(
-          (u) =>
-            u.email === credentials.email &&
-            u.password === credentials.password,
-        )
+        const email = credentials.email as string
+        const password = credentials.password as string
 
-        if (!user) return null
+        try {
+          const res = await loginUser({ email, password })
+          const { access_token, refresh_token, expires_at } = res.data
+          const payload = decodeJwtPayload(access_token)
 
-        return { id: user.id, name: user.name, email: user.email }
+          return {
+            id: payload.user_id as string,
+            email: payload.email as string,
+            accessToken: access_token,
+            refreshToken: refresh_token,
+            expiresAt: expires_at,
+          }
+        } catch (error) {
+          if (error instanceof ApiError) return null
+          throw error
+        }
       },
     }),
   ],
+  callbacks: {
+    jwt({ token, user }) {
+      if (user) {
+        token.sub = user.id
+        token.accessToken = user.accessToken
+        token.refreshToken = user.refreshToken
+        token.expiresAt = user.expiresAt
+      }
+      return token
+    },
+    session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.sub!
+      }
+      session.accessToken = token.accessToken
+      session.error = token.error
+      return session
+    },
+  },
 })
