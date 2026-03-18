@@ -1,8 +1,9 @@
 "use server"
 
-import { signIn, signOut } from "@/auth"
+import { auth, signIn, signOut } from "@/auth"
 import { AuthError } from "next-auth"
 import { registerUser } from "@/features/auth/services/auth"
+import { logout as backendLogout } from "@/features/auth/services/logout"
 import { ApiError } from "@/lib/api-client"
 import type { RegisterFormState } from "@/features/auth/types"
 import type { ApiErrorResponse } from "@/types"
@@ -101,5 +102,16 @@ function detailsToFormErrors(
 }
 
 export async function logout() {
+  const session = await auth()
+  const accessToken = session?.accessToken
+
+  if (accessToken) {
+    try {
+      await backendLogout(accessToken)
+    } catch {
+      // Si el backend responde 401 (token inválido/expirado), igualmente cerramos sesión local.
+    }
+  }
+
   await signOut({ redirectTo: "/" })
 }
