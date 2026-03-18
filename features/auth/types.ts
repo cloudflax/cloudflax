@@ -50,3 +50,9 @@ export interface RegisterFormState {
     confirmPassword?: string[]
   }
 }
+
+// ── Verify Email ──
+
+export interface VerifyEmailResponse {
+  message: string
+}

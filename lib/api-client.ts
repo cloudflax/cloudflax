@@ -3,6 +3,11 @@ type ApiRequestOptions = Omit<RequestInit, "body"> & {
   next?: NextFetchRequestConfig
 }
 
+function getApiBaseUrl() {
+  // Usamos siempre BACKEND_URL (expuesta al cliente vía next.config.mjs)
+  return process.env.BACKEND_URL
+}
+
 export class ApiError extends Error {
   constructor(
     public status: number,
@@ -19,7 +24,13 @@ export async function api<T>(
 ): Promise<T> {
   const { body, ...rest } = options ?? {}
 
-  const res = await fetch(`${process.env.API_URL}${path}`, {
+  const baseUrl = getApiBaseUrl()
+
+  if (!baseUrl) {
+    throw new Error("API base URL is not configured")
+  }
+
+  const res = await fetch(`${baseUrl}${path}`, {
     ...rest,
     headers: {
       "Content-Type": "application/json",

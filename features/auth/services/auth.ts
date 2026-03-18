@@ -4,6 +4,7 @@ import type {
   LoginResponse,
   RegisterRequest,
   RegisterResponse,
+  VerifyEmailResponse,
 } from "@/features/auth/types"
 
 export function loginUser(data: LoginRequest) {
@@ -18,4 +19,13 @@ export function registerUser(data: RegisterRequest) {
     method: "POST",
     body: data,
   })
+}
+
+export function verifyEmail(token: string) {
+  return api<VerifyEmailResponse>(
+    `/auth/verify-email?token=${encodeURIComponent(token)}`,
+    {
+      method: "GET",
+    },
+  )
 }

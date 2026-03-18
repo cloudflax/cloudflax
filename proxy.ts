@@ -1,7 +1,13 @@
 import { auth } from "@/auth"
 import { NextResponse } from "next/server"
 
-const AUTH_ROUTES = ["/login", "/register", "/forgot-password", "/confirm-email"]
+const AUTH_ROUTES = [
+  "/login",
+  "/register",
+  "/forgot-password",
+  "/confirm-email",
+  "/auth/verify-email",
+]
 
 export default auth((req) => {
   const isLoggedIn = !!req.auth
@@ -17,6 +23,13 @@ export default auth((req) => {
 })
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/login", "/register", "/forgot-password", "/confirm-email"],
+  matcher: [
+    "/dashboard/:path*",
+    "/login",
+    "/register",
+    "/forgot-password",
+    "/confirm-email",
+    "/auth/verify-email",
+  ],
 }
 
