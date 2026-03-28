@@ -23,3 +23,4 @@ Directrices operativas para agentes de Cursor.
 - **Componentes**: Server por defecto; `'use client'` solo para interactividad
 - **Types**: Interfaces claras, prohibido `any`
 - **Validación**: `lint → typecheck → test → build`
+- **Commits**: mensajes en **inglés**, Conventional Commits (`feat`, `fix`, `docs`, …); ver [docs/communication.md](docs/communication.md)
