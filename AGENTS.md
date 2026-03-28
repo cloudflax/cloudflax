@@ -11,6 +11,7 @@ Directrices operativas para agentes de Cursor.
 | Arquitectura | [docs/architecture.md](docs/architecture.md)   | Estructura, features, imports |
 | Componentes  | [docs/components.md](docs/components.md)       | Reglas, Server vs Client      |
 | Patrones     | [docs/patterns.md](docs/patterns.md)           | Server actions, API routes    |
+| Debugging    | [docs/debugging.md](docs/debugging.md)         | Errores comunes y soluciones  |
 | UX           | [docs/ux.md](docs/ux.md)                       | Carga, errores, accesibilidad |
 | Comunicación | [docs/communication.md](docs/communication.md) | Flujo de comunicación         |
 
