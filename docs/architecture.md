@@ -53,3 +53,23 @@ cloudflax/
 
 - Un feature **nunca importa directamente** de otro feature.
 - Si dos features necesitan compartir algo, moverlo a carpeta global.
+
+## Crear un nuevo feature
+
+```bash
+# 1. Crear carpeta
+mkdir features/<nombre>
+
+# 2. Estructura inicial
+features/<nombre>/
+├── components/
+├── actions/
+├── hooks/
+├── services/
+└── types.ts
+
+# 3. Agregar página en app/
+# app/<nombre>/page.tsx
+```
+
+Las páginas en `app/` importan desde `@/features/<nombre>/...`

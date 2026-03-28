@@ -4,6 +4,15 @@
 
 Componentes pequeños, atómicos y reutilizables.
 
+## Naming
+
+| Tipo         | Convención                | Ejemplo                     |
+| ------------ | ------------------------- | --------------------------- |
+| Componentes  | PascalCase                | `ProductCard`, `UserAvatar` |
+| Hooks        | camelCase + prefijo `use` | `useAuth`, `useCart`        |
+| Utils/Helper | camelCase                 | `formatDate`, `cn`          |
+| Constantes   | SCREAMING_SNAKE_CASE      | `MAX_ITEMS`, `API_URL`      |
+
 ## Server vs Client Components
 
 - **Server Components** (por defecto): fetching de datos, SEO
