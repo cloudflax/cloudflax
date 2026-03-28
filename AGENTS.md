@@ -14,6 +14,7 @@ Directrices operativas para agentes de Cursor.
 | Debugging    | [docs/debugging.md](docs/debugging.md)         | Errores comunes y soluciones  |
 | UX           | [docs/ux.md](docs/ux.md)                       | Carga, errores, accesibilidad |
 | Comunicación | [docs/communication.md](docs/communication.md) | Flujo de comunicación         |
+| GitHub Project | [docs/github-project.md](docs/github-project.md) | Board @cloudflax, labels, campos  |
 
 ## Reglas de oro
 
