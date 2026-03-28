@@ -2,15 +2,22 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ShoppingBag } from "lucide-react"
 import { auth } from "@/auth"
+import { getAuthenticatedUserState } from "@/features/auth/services/session"
+import { redirect } from "next/navigation"
 
 export default async function DashboardPage() {
   const session = await auth()
+  const { user, shouldLogout } = await getAuthenticatedUserState()
+
+  if (shouldLogout) {
+    redirect("/api/auth/force-logout?next=/login")
+  }
 
   return (
     <>
       <div className="mb-4">
         <h1 className="text-2xl font-bold">
-          Hola, {session?.user?.name ?? "Usuario"}
+          Hola, {user?.name ?? session?.user?.name ?? "Usuario"}
         </h1>
         <p className="text-muted-foreground">
           Bienvenido al panel de administración.

@@ -56,3 +56,34 @@ export interface RegisterFormState {
 export interface VerifyEmailResponse {
   message: string
 }
+
+// ── Session / Me ──
+
+export type AuthErrorCode =
+  | "TOKEN_EXPIRED"
+  | "TOKEN_INVALID"
+  | "UNAUTHENTICATED"
+
+export interface CurrentUser {
+  id: string
+  name: string
+  email: string
+  email_verified_at: string | null
+  active_account_id: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface CurrentUserResponse {
+  data: CurrentUser
+}
+
+export interface RefreshTokenRequest {
+  refresh_token: string
+}
+
+export interface RefreshTokenResponse {
+  data: LoginResponseData
+}
+
+export type SessionStatus = "authenticated" | "refreshing" | "unauthenticated"

@@ -1,7 +1,10 @@
 import { api } from "@/lib/api-client"
+import { BACKEND_AUTH_PATHS } from "@/lib/constants"
 import type {
+  CurrentUserResponse,
   LoginRequest,
   LoginResponse,
+  RefreshTokenResponse,
   RegisterRequest,
   RegisterResponse,
   VerifyEmailResponse,
@@ -28,4 +31,20 @@ export function verifyEmail(token: string) {
       method: "GET",
     },
   )
+}
+
+export function refreshAccessToken(refreshToken: string) {
+  return api<RefreshTokenResponse>(BACKEND_AUTH_PATHS.refresh, {
+    method: "POST",
+    body: { refresh_token: refreshToken },
+  })
+}
+
+export function getCurrentUser(accessToken: string) {
+  return api<CurrentUserResponse>("/users/me", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
 }

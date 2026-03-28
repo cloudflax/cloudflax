@@ -9,13 +9,14 @@ import type { ApiErrorResponse } from "@/types"
 type Status = "success" | "error"
 
 type VerifyEmailPageProps = {
-  searchParams?: Record<string, string | string[] | undefined>
+  searchParams?: Promise<Record<string, string | string[] | undefined>>
 }
 
 export default async function VerifyEmailPage({
   searchParams,
 }: VerifyEmailPageProps) {
-  const tokenParam = searchParams?.token
+  const resolvedSearchParams = searchParams ? await searchParams : undefined
+  const tokenParam = resolvedSearchParams?.token
   const token = typeof tokenParam === "string" ? tokenParam : undefined
 
   let status: Status = "error"

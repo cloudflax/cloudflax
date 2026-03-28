@@ -14,6 +14,8 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { auth } from "@/auth"
+import { getAuthenticatedUserState } from "@/features/auth/services/session"
+import { redirect } from "next/navigation"
 
 export default async function DashboardLayout({
   children,
@@ -21,16 +23,21 @@ export default async function DashboardLayout({
   children: React.ReactNode
 }>) {
   const session = await auth()
+  const { user, shouldLogout } = await getAuthenticatedUserState()
+
+  if (shouldLogout) {
+    redirect("/api/auth/force-logout?next=/login")
+  }
 
   return (
     <SidebarProvider>
       <AppSidebar
         user={
-          session?.user
+          user ?? session?.user
             ? {
-                name: session.user.name ?? "Usuario",
-                email: session.user.email ?? "",
-                avatar: session.user.image ?? "",
+                name: user?.name ?? session?.user?.name ?? "Usuario",
+                email: user?.email ?? session?.user?.email ?? "",
+                avatar: session?.user?.image ?? "",
               }
             : undefined
         }

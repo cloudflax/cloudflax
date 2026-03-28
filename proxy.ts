@@ -9,10 +9,18 @@ const AUTH_ROUTES = [
   "/auth/verify-email",
 ]
 
-export default auth((req) => {
-  const isLoggedIn = !!req.auth
-  const { pathname } = req.nextUrl
+type MiddlewareSession = {
+  accessToken?: string
+  error?: "RefreshTokenError"
+} | null
 
+export default auth((req) => {
+  const session = req.auth as MiddlewareSession
+  const isLoggedIn = Boolean(
+    session?.accessToken && session.error !== "RefreshTokenError",
+  )
+
+  const { pathname } = req.nextUrl
   if (pathname.startsWith("/dashboard") && !isLoggedIn) {
     return NextResponse.redirect(new URL("/login", req.nextUrl))
   }
