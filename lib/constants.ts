@@ -7,6 +7,7 @@ export const ROUTES = {
   forgotPassword: "/forgot-password",
   confirmEmail: "/confirm-email",
   dashboard: "/dashboard",
+  dashboardAccount: "/dashboard/account",
 } as const
 
 export const AUTH_POLICY = {

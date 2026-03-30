@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useTransition } from "react"
 import {
   Avatar,
@@ -30,6 +31,7 @@ import {
   LogOutIcon,
 } from "lucide-react"
 import { logout } from "@/features/auth/actions/auth"
+import { ROUTES } from "@/lib/constants"
 
 function getInitials(name: string) {
   return name
@@ -103,9 +105,11 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheckIcon />
-                Account
+              <DropdownMenuItem asChild>
+                <Link href={ROUTES.dashboardAccount}>
+                  <BadgeCheckIcon />
+                  Cuenta
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <CreditCardIcon />
