@@ -4,6 +4,7 @@ import { auth, signIn, signOut } from "@/auth"
 import { AuthError } from "next-auth"
 import { registerUser } from "@/features/auth/services/auth"
 import { logout as backendLogout } from "@/features/auth/services/logout"
+import { invalidateAuthenticatedUserProfileCache } from "@/features/auth/services/session"
 import { ApiError } from "@/lib/api-client"
 import type { RegisterFormState } from "@/features/auth/types"
 import type { ApiErrorResponse } from "@/types"
@@ -106,6 +107,7 @@ export async function logout() {
   const accessToken = session?.accessToken
 
   if (accessToken) {
+    invalidateAuthenticatedUserProfileCache(accessToken)
     try {
       await backendLogout(accessToken)
     } catch {

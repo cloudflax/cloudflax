@@ -11,7 +11,7 @@ function getApiBaseUrl() {
   return process.env.BACKEND_URL
 }
 
-async function executeAuthenticatedFetch<T>(
+export async function executeAuthenticatedFetch<T>(
   accessToken: string,
   path: string,
   options?: AuthenticatedApiOptions,
