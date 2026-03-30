@@ -49,7 +49,7 @@ const data = {
       title: "Playground",
       url: "#",
       icon: <TerminalSquareIcon />,
-      isActive: true,
+      isActive: false,
       items: [
         { title: "History", url: "#" },
         { title: "Starred", url: "#" },
