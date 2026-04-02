@@ -1,133 +1,66 @@
 # GitHub Project — @cloudflax
 
-Guía para crear issues, enlazarlos al board y rellenar metadatos de forma consistente.
+Issues en `cloudflax/cloudflax`, board [project 11](https://github.com/users/cloudflax/projects/11). Owner CLI: `cloudflax`.
 
-## Proyecto
-
-| Dato | Valor |
-| ---- | ----- |
-| Nombre en GitHub | **@cloudflax** |
-| URL | https://github.com/users/cloudflax/projects/11 |
-| Número (`gh project …`) | `11` |
-| Owner (`--owner`) | `cloudflax` |
-| Repositorio frontend | `cloudflax/cloudflax` |
-
-## Assignees
-
-- **Siempre** asignar a **`cloudflax`** (usuario dueño del trabajo en este repo).
-
-Al crear un issue:
+## Flujo mínimo
 
 ```bash
-gh issue create --repo cloudflax/cloudflax --assignee cloudflax ...
-```
-
-## Añadir el issue al board
-
-Tras crear el issue, enlazarlo al proyecto:
-
-```bash
+gh issue create --repo cloudflax/cloudflax --assignee cloudflax --label <label> ...
 gh project item-add 11 --owner cloudflax --url https://github.com/cloudflax/cloudflax/issues/<N>
 ```
 
-## Labels del repositorio
+## Labels
 
-Usar **uno o los que apliquen** según el tipo de trabajo (issues en `cloudflax/cloudflax`):
+`bug` | `enhancement` | `documentation` | `question` | `good first issue` | `help wanted` | `duplicate` / `invalid` / `wontfix` (triage/cierre).
 
-| Label | Cuándo usarlo |
-| ----- | ------------- |
-| `bug` | Comportamiento incorrecto o regresión |
-| `enhancement` | Nueva funcionalidad o mejora de producto |
-| `documentation` | Cambios en docs, README, guías de agentes, etc. |
-| `question` | Falta información o hay que decidir algo |
-| `good first issue` | Tarea acotada para quien empieza |
-| `help wanted` | Convoca revisión o ayuda externa |
-| `duplicate` / `invalid` / `wontfix` | Solo si corresponde al cierre o triage |
+## Campos del board
 
-```bash
-gh issue create --repo cloudflax/cloudflax --label enhancement --assignee cloudflax ...
-```
+**Obligatorios en todo ítem:** Priority, Size, Estimate. Completarlos al enlazar el issue al board o en la primera pasada de triage.
 
-## Campos del proyecto (obligatorios de rellenar en el board)
+**Opcionales:** Start date, Target date — solo si hay compromiso o ventana conocida; si no aplica, vacío en la UI o `--clear` por CLI.
 
-Rellenar **Priority**, **Size** y **Estimate** en cada ítem. **Start date** y **Target date** solo si hay planificación explícita; si no aplica, dejar **sin fecha** (vacío en la UI o `--clear` vía CLI).
+### Priority (una opción)
 
-### Priority (elegir una opción)
+| Opción | Cuándo |
+| ------ | ------ |
+| **P0** | Bloquea release, producción inestable o tema de seguridad |
+| **P1** | Importante para el sprint o milestone actual |
+| **P2** | Mejora o deuda técnica; se puede posponer sin riesgo crítico |
 
-| Opción | Uso |
-| ------ | --- |
-| **P0** | Bloquea release, producción rota o seguridad; atención inmediata |
-| **P1** | Importante en el sprint o milestone actual; debe entrar pronto |
-| **P2** | Mejora o deuda; se puede posponer sin impacto crítico |
+### Size (una opción)
 
-### Size (elegir una opción)
-
-| Opción | Uso orientativo |
-| ------ | --------------- |
-| **XS** | Cambio trivial (minutos / pocas líneas) |
-| **S** | Alcance pequeño, un archivo o flujo claro |
-| **M** | Varios archivos o feature mediana |
-| **L** | Feature grande o varias áreas del código |
-| **XL** | Epica o refactor amplio; considerar partir en sub-issues |
+| Opción | Alcance orientativo |
+| ------ | ------------------- |
+| **XS** | Cambio trivial (minutos, pocas líneas) |
+| **S** | Alcance pequeño: un archivo o un flujo claro |
+| **M** | Varios archivos o feature de tamaño medio |
+| **L** | Feature grande o toca varias áreas |
+| **XL** | Épica o refactor amplio; considerar dividir en issues |
 
 ### Estimate
 
-- Valor **numérico** en el campo del proyecto (story points u horas; el equipo debe acordar la unidad; por defecto tratarlo como **story points** 1–13 alineados con **Size**: XS≈1, S≈2–3, M≈5, L≈8, XL≈13).
+Valor numérico en el campo del proyecto. Por defecto interpretar como **story points** (1–13). Debe ser coherente con **Size**: XS≈1, S≈2–3, M≈5, L≈8, XL≈13; el equipo puede refinar la escala.
 
-### Start date / Target date
+### Fechas
 
-- **Sin fecha** salvo que haya compromiso o ventana conocida.
-- Con fechas: formato **YYYY-MM-DD** al editar por CLI.
+`YYYY-MM-DD` al editar por CLI; en la UI, el date picker del proyecto.
 
-## Columnas del board (Status)
+## Status (columnas)
 
-| Columna | Significado |
-| ------- | ----------- |
-| **Backlog** | Tareas pendientes que aún no se han comenzado a trabajar. |
-| **In progress** | Tareas con una rama de desarrollo activa donde se está escribiendo código actualmente. |
-| **In review** | Tareas con un Pull Request abierto esperando revisión y aprobación para entrar a `develop`. |
-| **Staging** | Código ya aprobado y fusionado en `develop`. Es la sala de espera para el próximo release a producción. |
-| **Done** | Tareas finalizadas, fusionadas en `main` y con sus Issues cerradas oficialmente. |
+**Backlog** → **In progress** (rama activa) → **In review** (PR) → **Staging** (en `develop`) → **Done** (`main`, issue cerrada).
 
-## Referencia técnica (IDs para `gh project item-edit`)
+## CLI: `gh project item-edit`
 
-Project id (`--project-id`):
-
-`PVT_kwHOCok_aM4BTFgB`
-
-Obtener el **id del ítem** en el board (cambia por issue):
+Board **11**, owner `cloudflax`. No hace falta mantener aquí una tabla de IDs: salen del API y pueden cambiar si se toca el proyecto.
 
 ```bash
-gh project item-list 11 --owner cloudflax --format json --limit 100
+gh project field-list 11 --owner cloudflax --format json   # field id + opciones single-select
+gh project item-list 11 --owner cloudflax --format json --limit 100   # item id por issue
 ```
 
-Campos ( `--field-id` ) y opciones single-select ( `--single-select-option-id` ):
-
-| Campo | `--field-id` | Opciones (nombre → option id) |
-| ----- | ------------ | ------------------------------ |
-| Status | `PVTSSF_lAHOCok_aM4BTFgBzhAbi2Y` | Backlog `f75ad846`, In progress `47fc9ee4`, In review `df73e18b`, Staging `637cb9c8`, Done `98236657` |
-| Priority | `PVTSSF_lAHOCok_aM4BTFgBzhAbi4w` | P0 `79628723`, P1 `0a877460`, P2 `da944a9c` |
-| Size | `PVTSSF_lAHOCok_aM4BTFgBzhAbi40` | XS `6c6483d2`, S `f784b110`, M `7515a9f1`, L `817d0097`, XL `db339eb2` |
-| Estimate | `PVTF_lAHOCok_aM4BTFgBzhAbi44` | `--number` (float) |
-| Start date | `PVTF_lAHOCok_aM4BTFgBzhAbi48` | `--date YYYY-MM-DD` o `--clear` |
-| Target date | `PVTF_lAHOCok_aM4BTFgBzhAbi5A` | `--date YYYY-MM-DD` o `--clear` |
-
-Ejemplo (sustituir `<ITEM_ID>` por el id del ítem en el proyecto):
+Un campo por comando. **Single select** (Status, Priority, Size): `--field-id` y `--single-select-option-id` (los option id están en el JSON de cada campo). **Estimate**: `--number`. **Start / Target date**: `--date` o `--clear`.
 
 ```bash
-gh project item-edit \
-  --project-id PVT_kwHOCok_aM4BTFgB \
-  --id <ITEM_ID> \
-  --field-id PVTSSF_lAHOCok_aM4BTFgBzhAbi4w \
-  --single-select-option-id 0a877460
+gh project item-edit --project-id <PROJECT_ID> --id <ITEM_ID> \
+  --field-id <FIELD_ID> --single-select-option-id <OPTION_ID>
 ```
-
-Un campo por invocación de `gh project item-edit`.
-
-## Comprobar definición de campos
-
-```bash
-gh project field-list 11 --owner cloudflax --format json
-```
-
-Si GitHub cambia IDs, volver a listar con el comando anterior y actualizar esta tabla.
