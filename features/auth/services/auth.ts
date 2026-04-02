@@ -7,6 +7,8 @@ import type {
   RefreshTokenResponse,
   RegisterRequest,
   RegisterResponse,
+  ResendVerificationRequest,
+  ResendVerificationResponse,
   VerifyEmailResponse,
 } from "@/features/auth/types"
 
@@ -19,6 +21,13 @@ export function loginUser(data: LoginRequest) {
 
 export function registerUser(data: RegisterRequest) {
   return api<RegisterResponse>("/auth/register", {
+    method: "POST",
+    body: data,
+  })
+}
+
+export function resendVerificationEmail(data: ResendVerificationRequest) {
+  return api<ResendVerificationResponse>("/auth/resend-verification", {
     method: "POST",
     body: data,
   })

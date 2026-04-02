@@ -1,6 +1,29 @@
+import type { ApiErrorResponse } from "@/types"
+
 type ApiRequestOptions = Omit<RequestInit, "body"> & {
   body?: unknown
   next?: NextFetchRequestConfig
+}
+
+export function parseApiErrorBody(body: string): ApiErrorResponse | null {
+  try {
+    const data = JSON.parse(body) as unknown
+    if (
+      data &&
+      typeof data === "object" &&
+      "error" in data &&
+      data.error &&
+      typeof data.error === "object" &&
+      "code" in data.error &&
+      "message" in data.error &&
+      "status" in data.error
+    ) {
+      return data as ApiErrorResponse
+    }
+  } catch {
+    // body no es JSON válido
+  }
+  return null
 }
 
 function getApiBaseUrl() {
