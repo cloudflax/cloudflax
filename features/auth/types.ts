@@ -43,12 +43,25 @@ export interface RegisterResponse {
 export interface RegisterFormState {
   success: boolean
   message: string
+  /** Email registrado cuando hace falta verificación; el cliente puede reenviar el enlace. */
+  registeredEmail?: string
   errors?: {
     name?: string[]
     email?: string[]
     password?: string[]
     confirmPassword?: string[]
   }
+}
+
+// ── Resend verification ──
+
+export interface ResendVerificationRequest {
+  email: string
+}
+
+/** 200: `{ "message": "If the email exists, a verification link has been sent" }` */
+export interface ResendVerificationResponse {
+  message: string
 }
 
 // ── Verify Email ──

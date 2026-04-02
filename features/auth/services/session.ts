@@ -2,12 +2,11 @@ import { createHash } from "node:crypto"
 import { cache } from "react"
 import { unstable_cache, revalidateTag } from "next/cache"
 import { auth } from "@/auth"
-import { ApiError } from "@/lib/api-client"
+import { ApiError, parseApiErrorBody } from "@/lib/api-client"
 import {
   executeAuthenticatedFetch,
 } from "@/lib/authenticated-api-client"
 import { AUTH_POLICY, AUTH_USER_ME_CACHE } from "@/lib/constants"
-import type { ApiErrorResponse } from "@/types"
 import { transitionSessionState } from "@/features/auth/lib/session-state-machine"
 import { trackAuthMetric } from "@/features/auth/services/telemetry"
 import type { CurrentUser, SessionStatus } from "@/features/auth/types"
@@ -16,28 +15,6 @@ export interface AuthenticatedUserState {
   status: SessionStatus
   user: CurrentUser | null
   shouldLogout: boolean
-}
-
-function parseApiErrorBody(body: string): ApiErrorResponse | null {
-  try {
-    const data = JSON.parse(body) as unknown
-    if (
-      data &&
-      typeof data === "object" &&
-      "error" in data &&
-      data.error &&
-      typeof data.error === "object" &&
-      "code" in data.error &&
-      "message" in data.error &&
-      "status" in data.error
-    ) {
-      return data as ApiErrorResponse
-    }
-  } catch {
-    // Ignoramos body no JSON.
-  }
-
-  return null
 }
 
 function digestAccessToken(accessToken: string): string {
