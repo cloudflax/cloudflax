@@ -79,15 +79,15 @@ Rellenar **Priority**, **Size** y **Estimate** en cada ítem. **Start date** y *
 - **Sin fecha** salvo que haya compromiso o ventana conocida.
 - Con fechas: formato **YYYY-MM-DD** al editar por CLI.
 
-## Status sugerido en el flujo
+## Columnas del board (Status)
 
-| Valor | Cuándo |
-| ----- | ------ |
-| Backlog | Idea o tarea sin comprometer |
-| Ready | Lista para coger |
-| In progress | En curso |
-| In review | PR abierto o pendiente de revisión |
-| Done | Cerrado y mergeado (o resuelto) |
+| Columna | Significado |
+| ------- | ----------- |
+| **Backlog** | Tareas pendientes que aún no se han comenzado a trabajar. |
+| **In progress** | Tareas con una rama de desarrollo activa donde se está escribiendo código actualmente. |
+| **In review** | Tareas con un Pull Request abierto esperando revisión y aprobación para entrar a `develop`. |
+| **Staging** | Código ya aprobado y fusionado en `develop`. Es la sala de espera para el próximo release a producción. |
+| **Done** | Tareas finalizadas, fusionadas en `main` y con sus Issues cerradas oficialmente. |
 
 ## Referencia técnica (IDs para `gh project item-edit`)
 
@@ -105,7 +105,7 @@ Campos ( `--field-id` ) y opciones single-select ( `--single-select-option-id` )
 
 | Campo | `--field-id` | Opciones (nombre → option id) |
 | ----- | ------------ | ------------------------------ |
-| Status | `PVTSSF_lAHOCok_aM4BTFgBzhAbi2Y` | Backlog `f75ad846`, Ready `61e4505c`, In progress `47fc9ee4`, In review `df73e18b`, Done `98236657` |
+| Status | `PVTSSF_lAHOCok_aM4BTFgBzhAbi2Y` | Backlog `f75ad846`, In progress `47fc9ee4`, In review `df73e18b`, Staging `637cb9c8`, Done `98236657` |
 | Priority | `PVTSSF_lAHOCok_aM4BTFgBzhAbi4w` | P0 `79628723`, P1 `0a877460`, P2 `da944a9c` |
 | Size | `PVTSSF_lAHOCok_aM4BTFgBzhAbi40` | XS `6c6483d2`, S `f784b110`, M `7515a9f1`, L `817d0097`, XL `db339eb2` |
 | Estimate | `PVTF_lAHOCok_aM4BTFgBzhAbi44` | `--number` (float) |
