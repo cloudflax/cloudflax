@@ -1,6 +1,29 @@
+import type { ApiErrorResponse } from "@/types"
+
 type ApiRequestOptions = Omit<RequestInit, "body"> & {
   body?: unknown
   next?: NextFetchRequestConfig
+}
+
+export function parseApiErrorBody(body: string): ApiErrorResponse | null {
+  try {
+    const data = JSON.parse(body) as unknown
+    if (
+      data &&
+      typeof data === "object" &&
+      "error" in data &&
+      data.error &&
+      typeof data.error === "object" &&
+      "code" in data.error &&
+      "message" in data.error &&
+      "status" in data.error
+    ) {
+      return data as ApiErrorResponse
+    }
+  } catch {
+    // body no es JSON válido
+  }
+  return null
 }
 
 function getApiBaseUrl() {
@@ -12,6 +35,8 @@ export class ApiError extends Error {
   constructor(
     public status: number,
     public body: string,
+    /** Present when `status === 429` and the API sends `Retry-After`. */
+    public retryAfter?: string | null,
   ) {
     super(`API error ${status}: ${body}`)
     this.name = "ApiError"
@@ -41,7 +66,9 @@ export async function api<T>(
 
   if (!res.ok) {
     const text = await res.text()
-    throw new ApiError(res.status, text)
+    const retryAfter =
+      res.status === 429 ? res.headers.get("retry-after") : undefined
+    throw new ApiError(res.status, text, retryAfter)
   }
 
   const contentType = res.headers.get("content-type")

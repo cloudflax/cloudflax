@@ -5,9 +5,8 @@ import { AuthError } from "next-auth"
 import { registerUser } from "@/features/auth/services/auth"
 import { logout as backendLogout } from "@/features/auth/services/logout"
 import { invalidateAuthenticatedUserProfileCache } from "@/features/auth/services/session"
-import { ApiError } from "@/lib/api-client"
+import { ApiError, parseApiErrorBody } from "@/lib/api-client"
 import type { RegisterFormState } from "@/features/auth/types"
-import type { ApiErrorResponse } from "@/types"
 
 export async function login(
   _prevState: string | undefined,
@@ -54,7 +53,13 @@ export async function register(
     const message = res.meta.email_verification_required
       ? "Cuenta creada. Revisa tu correo para verificar tu email."
       : "Cuenta creada exitosamente. Ya puedes iniciar sesión."
-    return { success: true, message }
+    return {
+      success: true,
+      message,
+      ...(res.meta.email_verification_required && {
+        registeredEmail: res.data.email,
+      }),
+    }
   } catch (error) {
     if (error instanceof ApiError) {
       const parsed = parseApiErrorBody(error.body)
@@ -67,27 +72,6 @@ export async function register(
     }
     return { success: false, message: "Ocurrió un error inesperado." }
   }
-}
-
-function parseApiErrorBody(body: string): ApiErrorResponse | null {
-  try {
-    const data = JSON.parse(body) as unknown
-    if (
-      data &&
-      typeof data === "object" &&
-      "error" in data &&
-      data.error &&
-      typeof data.error === "object" &&
-      "code" in data.error &&
-      "message" in data.error &&
-      "status" in data.error
-    ) {
-      return data as ApiErrorResponse
-    }
-  } catch {
-    // body no es JSON válido
-  }
-  return null
 }
 
 function detailsToFormErrors(
