@@ -70,6 +70,26 @@ export interface VerifyEmailResponse {
   message: string
 }
 
+// ── Forgot / reset password ──
+
+export interface ForgotPasswordRequest {
+  email: string
+}
+
+/** 200: generic message (does not reveal whether the email exists). */
+export interface ForgotPasswordResponse {
+  message: string
+}
+
+export interface ResetPasswordRequest {
+  token: string
+  password: string
+}
+
+export interface ResetPasswordResponse {
+  message: string
+}
+
 // ── Session / Me ──
 
 export type AuthErrorCode =

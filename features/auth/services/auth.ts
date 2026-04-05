@@ -1,7 +1,9 @@
 import { api } from "@/lib/api-client"
-import { BACKEND_AUTH_PATHS } from "@/lib/constants"
+import { BACKEND_AUTH_PATHS, ROUTES } from "@/lib/constants"
 import type {
   CurrentUserResponse,
+  ForgotPasswordRequest,
+  ForgotPasswordResponse,
   LoginRequest,
   LoginResponse,
   RefreshTokenResponse,
@@ -9,6 +11,8 @@ import type {
   RegisterResponse,
   ResendVerificationRequest,
   ResendVerificationResponse,
+  ResetPasswordRequest,
+  ResetPasswordResponse,
   VerifyEmailResponse,
 } from "@/features/auth/types"
 
@@ -35,11 +39,25 @@ export function resendVerificationEmail(data: ResendVerificationRequest) {
 
 export function verifyEmail(token: string) {
   return api<VerifyEmailResponse>(
-    `/auth/verify-email?token=${encodeURIComponent(token)}`,
+    `${ROUTES.verifyEmail}?token=${encodeURIComponent(token)}`,
     {
       method: "GET",
     },
   )
+}
+
+export function requestPasswordReset(data: ForgotPasswordRequest) {
+  return api<ForgotPasswordResponse>("/auth/forgot-password", {
+    method: "POST",
+    body: data,
+  })
+}
+
+export function resetPassword(data: ResetPasswordRequest) {
+  return api<ResetPasswordResponse>(ROUTES.resetPassword, {
+    method: "POST",
+    body: data,
+  })
 }
 
 export function refreshAccessToken(refreshToken: string) {

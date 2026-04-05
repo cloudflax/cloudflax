@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { register } from "@/features/auth/actions/auth"
 import { resendVerificationEmail } from "@/features/auth/services/auth"
 import { ApiError, parseApiErrorBody } from "@/lib/api-client"
+import { ROUTES } from "@/lib/constants"
 
 const RESEND_SUCCESS_FALLBACK =
   "If the email exists, a verification link has been sent"
@@ -107,7 +108,7 @@ function RegisterSuccessNotice({
         <span className="hidden sm:inline" aria-hidden>
           ·
         </span>
-        <Link href="/login" className="font-medium underline underline-offset-4">
+        <Link href={ROUTES.login} className="font-medium underline underline-offset-4">
           Ir al login
         </Link>
       </p>
@@ -245,7 +246,7 @@ export function RegisterForm() {
       <p className="mt-6 text-center text-sm text-muted-foreground">
         ¿Ya tienes cuenta?{" "}
         <Link
-          href="/login"
+          href={ROUTES.login}
           className="font-medium text-foreground hover:underline"
         >
           Inicia sesión

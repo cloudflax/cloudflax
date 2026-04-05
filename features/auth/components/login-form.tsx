@@ -5,6 +5,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { login } from "@/features/auth/actions/auth"
+import { ROUTES } from "@/lib/constants"
 import { Loader2 } from "lucide-react"
 
 export function LoginForm() {
@@ -42,7 +43,7 @@ export function LoginForm() {
               Contraseña
             </label>
             <Link
-              href="/forgot-password"
+              href={ROUTES.forgotPassword}
               className="text-xs text-muted-foreground hover:text-foreground"
             >
               ¿Olvidaste tu contraseña?
@@ -70,7 +71,7 @@ export function LoginForm() {
       <p className="mt-6 text-center text-sm text-muted-foreground">
         ¿No tienes cuenta?{" "}
         <Link
-          href="/register"
+          href={ROUTES.register}
           className="font-medium text-foreground hover:underline"
         >
           Regístrate
