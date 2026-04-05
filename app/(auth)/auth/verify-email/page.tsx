@@ -3,6 +3,7 @@ import { CheckCircle2, Loader2, XCircle } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { verifyEmail } from "@/features/auth/services/auth"
+import { ROUTES } from "@/lib/constants"
 import { ApiError } from "@/lib/api-client"
 import type { ApiErrorResponse } from "@/types"
 
@@ -78,7 +79,7 @@ export default async function VerifyEmailPage({
       {!isLoading && (
         <div className="mt-8 space-y-3">
           <Button className="w-full" asChild>
-            <Link href="/login">Ir al inicio de sesión</Link>
+            <Link href={ROUTES.login}>Ir al inicio de sesión</Link>
           </Button>
         </div>
       )}
