@@ -1,29 +1,35 @@
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
 import { MailCheck } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
+import { AuthFormShell } from "@/features/auth/components/auth-form-shell"
+import { AuthFormStatusPanel } from "@/features/auth/components/auth-form-status"
+import { ROUTES } from "@/lib/constants"
 
 export default function ConfirmEmailPage() {
   return (
-    <div className="rounded-xl border bg-card p-8 shadow-sm text-center">
-      <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-primary/10">
-        <MailCheck className="size-8 text-primary" />
-      </div>
-
-      <h2 className="text-xl font-semibold">Confirma tu correo</h2>
-      <p className="mt-2 text-sm text-muted-foreground">
-        Hemos enviado un enlace de verificación a tu correo electrónico.
-        Revisa tu bandeja de entrada y haz clic en el enlace para activar tu
-        cuenta.
-      </p>
-
-      <div className="mt-8 space-y-3">
-        <Button variant="outline" className="w-full">
+    <AuthFormShell className="text-center">
+      <AuthFormStatusPanel
+        icon={<MailCheck className="size-8 text-primary" aria-hidden />}
+        title="Confirma tu correo"
+        description="Hemos enviado un enlace de verificación a tu correo electrónico. Revisa tu bandeja de entrada y haz clic en el enlace para activar tu cuenta."
+      />
+      <div className="space-y-3">
+        <Button
+          variant="outline"
+          className="h-10 w-full cursor-pointer shadow-sm"
+        >
           Reenviar correo de verificación
         </Button>
-        <Button variant="link" size="sm" asChild>
-          <Link href="/login">Volver al inicio de sesión</Link>
-        </Button>
+        <p className="text-center text-sm text-muted-foreground">
+          <Link
+            href={ROUTES.login}
+            className="font-medium text-foreground hover:underline"
+          >
+            Volver al inicio de sesión
+          </Link>
+        </p>
       </div>
-    </div>
+    </AuthFormShell>
   )
 }
