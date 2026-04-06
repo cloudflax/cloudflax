@@ -25,9 +25,9 @@ export function LoginForm() {
   return (
     <AuthFormShell>
       <AuthFormHeader
-        eyebrow={{ icon: ShieldCheck, label: "Acceso seguro" }}
-        title="Iniciar sesión"
-        description="Bienvenido de nuevo, ingresa tus credenciales para continuar"
+        eyebrow={{ icon: ShieldCheck, label: "Tu espacio protegido" }}
+        title="Bienvenido de nuevo"
+        description="Introduce tu correo y contraseña para entrar a tu cuenta"
       />
 
       <form action={formAction} className="space-y-5">
@@ -54,7 +54,7 @@ export function LoginForm() {
               href={ROUTES.forgotPassword}
               className="text-xs text-muted-foreground hover:text-foreground"
             >
-              ¿Olvidaste tu contraseña?
+              ¿La has olvidado?
             </Link>
           </div>
           <AuthIconInput
@@ -82,19 +82,18 @@ export function LoginForm() {
       </form>
 
       <AuthFormTrustNote>
-        Queremos que accedas con confianza: cuidamos tu sesión con responsabilidad
-        para que tu experiencia con{" "}
-        <span className="font-bold text-foreground">Cloudflax</span> sea segura
-        y tranquila.
+        Cuidamos tu sesión para que en{" "}
+        <span className="font-bold text-foreground">Cloudflax</span> puedas
+        centrarte en tu negocio, no en preocuparte por la seguridad.
       </AuthFormTrustNote>
 
       <AuthFormAlternateAction>
-        ¿No tienes cuenta?{" "}
+        ¿Primera vez aquí?{" "}
         <Link
           href={ROUTES.register}
           className="font-medium text-foreground hover:underline"
         >
-          Regístrate
+          Crea tu cuenta
         </Link>
       </AuthFormAlternateAction>
     </AuthFormShell>

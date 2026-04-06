@@ -22,7 +22,7 @@ export async function login(
     if (error instanceof AuthError) {
       switch (error.type) {
         case "CredentialsSignin":
-          return "Credenciales inválidas."
+          return "Correo o contraseña incorrectos. Revísalos e inténtalo de nuevo."
         default:
           return "Ocurrió un error inesperado."
       }

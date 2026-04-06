@@ -31,7 +31,7 @@ export default function AuthLayout({
           <div className="w-full max-w-md">
             <div className="inline-flex items-center justify-center gap-2 text-sm font-semibold text-primary">
               <Store className="size-4 shrink-0" />
-              Comercio y operaciones
+              Comercio y operaciones, conectados
             </div>
             <h1 className="mt-5 text-3xl font-bold leading-tight">
               Gestiona tu negocio con una experiencia fluida y segura
