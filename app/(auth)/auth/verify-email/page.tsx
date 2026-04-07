@@ -5,9 +5,8 @@ import { Button } from "@/components/ui/button"
 import { AuthFormShell } from "@/features/auth/components/auth-form-shell"
 import { AuthFormStatusPanel } from "@/features/auth/components/auth-form-status"
 import { verifyEmail } from "@/features/auth/services/auth"
-import { ApiError } from "@/lib/api-client"
+import { ApiError, parseApiErrorBody } from "@/lib/api-client"
 import { ROUTES } from "@/lib/constants"
-import type { ApiErrorResponse } from "@/types"
 
 type Status = "success" | "error"
 
@@ -38,12 +37,10 @@ export default async function VerifyEmailPage({
     } catch (error) {
       status = "error"
       if (error instanceof ApiError) {
-        try {
-          const parsed = JSON.parse(error.body) as ApiErrorResponse
-          message = parsed.error?.message ?? "No fue posible verificar tu correo."
-        } catch {
-          message = "No fue posible verificar tu correo."
-        }
+        const parsed = parseApiErrorBody(error.body)
+        message =
+          parsed?.error.message ??
+          "No fue posible verificar tu correo."
       } else {
         message = "No fue posible verificar tu correo."
       }

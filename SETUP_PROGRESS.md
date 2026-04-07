@@ -103,8 +103,8 @@ Antes de pushear código de una fase, ejecuta al menos lo que toque el cambio (`
 
 ### Fase B — Calidad y consistencia (post-core)
 
-- [ ] Revisar que mensajes de error del reset usen el mismo patrón que el resto de auth (`parseApiErrorBody`, fallback coherente).
-- [ ] Confirmar con backend idempotencia o límites de reintentos del token en verify/reset si aplica.
+- [x] Errores API alineados: `rateLimitUserMessage` compartido (forgot + reset), `verify-email` usa `parseApiErrorBody`; reset trata **429** y fallback con código de estado si no hay cuerpo parseable.
+- [ ] **Seguimiento backend (manual):** idempotencia de `GET` verify-email y límites de uso del token de reset — documentar en contrato de API; no bloquea el cierre funcional del frontend.
 
 ---
 

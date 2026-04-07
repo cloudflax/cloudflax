@@ -11,6 +11,7 @@ import { AuthFormHeader } from "@/features/auth/components/auth-form-header"
 import { AuthFormShell } from "@/features/auth/components/auth-form-shell"
 import { AuthFormStatusPanel } from "@/features/auth/components/auth-form-status"
 import { AuthIconInput } from "@/features/auth/components/auth-icon-input"
+import { rateLimitUserMessage } from "@/features/auth/lib/rate-limit-message"
 import { resetPassword } from "@/features/auth/services/auth"
 import { ApiError, parseApiErrorBody } from "@/lib/api-client"
 import { ROUTES } from "@/lib/constants"
@@ -74,12 +75,19 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
       })
     } catch (error) {
       if (error instanceof ApiError) {
+        if (error.status === 429) {
+          setState({
+            status: "error",
+            message: rateLimitUserMessage(error.retryAfter),
+          })
+          return
+        }
         const parsed = parseApiErrorBody(error.body)
         const message =
           parsed?.error.message ??
           (error.status === 422
             ? "El enlace no es válido o ha expirado. Solicita uno nuevo desde recuperar contraseña."
-            : "No pudimos restablecer la contraseña. Inténtalo de nuevo.")
+            : `No pudimos restablecer la contraseña (${error.status}). Inténtalo de nuevo.`)
         setState({ status: "error", message })
         return
       }

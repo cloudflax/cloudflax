@@ -13,6 +13,7 @@ import {
 import { AuthFormHeader } from "@/features/auth/components/auth-form-header"
 import { AuthFormShell } from "@/features/auth/components/auth-form-shell"
 import { AuthIconInput } from "@/features/auth/components/auth-icon-input"
+import { rateLimitUserMessage } from "@/features/auth/lib/rate-limit-message"
 import { requestPasswordReset } from "@/features/auth/services/auth"
 import { ApiError, parseApiErrorBody } from "@/lib/api-client"
 import { ROUTES } from "@/lib/constants"
@@ -26,16 +27,6 @@ type ForgotUiState =
   | { status: "loading" }
   | { status: "success"; message: string }
   | { status: "error"; message: string }
-
-function rateLimitUserMessage(retryAfter?: string | null): string {
-  if (retryAfter) {
-    const seconds = Number.parseInt(retryAfter, 10)
-    if (!Number.isNaN(seconds) && seconds > 0) {
-      return `Demasiadas solicitudes. Vuelve a intentarlo en ${seconds} segundos.`
-    }
-  }
-  return "Demasiadas solicitudes. Espera un momento e inténtalo de nuevo."
-}
 
 export function ForgotPasswordForm() {
   const [state, setState] = useState<ForgotUiState>({ status: "idle" })
