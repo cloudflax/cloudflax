@@ -2,7 +2,10 @@
 
 import { auth, signIn, signOut } from "@/auth"
 import { AuthError, CredentialsSignin } from "next-auth"
-import { rateLimitUserMessage } from "@/features/auth/lib/rate-limit-message"
+import {
+  credentialsLockUserMessage,
+  rateLimitUserMessage,
+} from "@/features/auth/lib/rate-limit-message"
 import { registerUser } from "@/features/auth/services/auth"
 import { logout as backendLogout } from "@/features/auth/services/logout"
 import { invalidateAuthenticatedUserProfileCache } from "@/features/auth/services/session"
@@ -24,6 +27,12 @@ export async function login(
       switch (error.code) {
         case "email_not_verified":
           return "Verifica tu correo antes de iniciar sesión. Revisa tu bandeja o solicita un nuevo enlace desde la página de registro o de confirmación."
+        case "credentials_locked": {
+          const r = error.cause?.retryAfter
+          const retryAfter =
+            typeof r === "string" || r == null ? r : String(r)
+          return credentialsLockUserMessage(retryAfter)
+        }
         case "rate_limited": {
           const r = error.cause?.retryAfter
           const retryAfter =

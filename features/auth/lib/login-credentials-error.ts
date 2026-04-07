@@ -24,9 +24,17 @@ export function throwInvalidAccessTokenPayload(): never {
 /** Mapea fallos de `POST /auth/login` a códigos seguros para Auth.js (query / server action). */
 export function throwFromLoginApiError(error: ApiError): never {
   if (error.status === 429) {
-    throwCredentialsSignin("rate_limited", {
-      retryAfter: error.retryAfter ?? null,
-    })
+    const parsed = parseApiErrorBody(error.body)
+    const apiCode = parsed?.error.code ?? ""
+    const fromBody = parsed?.error.retry_after_seconds
+    const retryFromBody =
+      typeof fromBody === "number" && fromBody > 0 ? String(fromBody) : null
+    const retryAfter = retryFromBody ?? error.retryAfter ?? null
+
+    if (apiCode === "CREDENTIALS_LOCKED") {
+      throwCredentialsSignin("credentials_locked", { retryAfter })
+    }
+    throwCredentialsSignin("rate_limited", { retryAfter })
   }
   const parsed = parseApiErrorBody(error.body)
   const apiCode = parsed?.error.code ?? ""

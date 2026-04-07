@@ -17,6 +17,8 @@ export interface ApiErrorPayload {
   message: string
   status: number
   details?: ApiErrorDetail[]
+  /** Secundos hasta poder reintentar (p. ej. bloqueo por credenciales en login). */
+  retry_after_seconds?: number
 }
 
 /** Respuesta de error de la API: { error: { code, message, status, details? } } */

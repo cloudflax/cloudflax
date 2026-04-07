@@ -1,3 +1,14 @@
+/** Copy when login is blocked after repeated wrong passwords (`CREDENTIALS_LOCKED`). */
+export function credentialsLockUserMessage(retryAfter?: string | null): string {
+  if (retryAfter) {
+    const seconds = Number.parseInt(retryAfter, 10)
+    if (!Number.isNaN(seconds) && seconds > 0) {
+      return `Demasiados intentos fallidos con este correo. Vuelve a intentarlo en ${seconds} segundos.`
+    }
+  }
+  return "Demasiados intentos fallidos con este correo. Espera un momento e inténtalo de nuevo."
+}
+
 /** User-facing copy when the API returns 429; uses Retry-After when present. */
 export function rateLimitUserMessage(retryAfter?: string | null): string {
   if (retryAfter) {
