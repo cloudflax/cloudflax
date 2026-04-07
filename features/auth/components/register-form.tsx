@@ -15,24 +15,13 @@ import { AuthFormHeader } from "@/features/auth/components/auth-form-header"
 import { AuthFormShell } from "@/features/auth/components/auth-form-shell"
 import { AuthIconInput } from "@/features/auth/components/auth-icon-input"
 import { register } from "@/features/auth/actions/auth"
+import {
+  RESEND_VERIFICATION_NEUTRAL_SUCCESS,
+  resendVerificationErrorFromApiError,
+} from "@/features/auth/lib/resend-verification"
 import { resendVerificationEmail } from "@/features/auth/services/auth"
-import { ApiError, parseApiErrorBody } from "@/lib/api-client"
+import { ApiError } from "@/lib/api-client"
 import { ROUTES } from "@/lib/constants"
-
-const RESEND_SUCCESS_FALLBACK =
-  "If the email exists, a verification link has been sent"
-
-function resendVerificationUserMessage(code: string, fallback: string): string {
-  switch (code) {
-    case "EMAIL_ALREADY_VERIFIED":
-      return "Este correo ya está verificado. Puedes iniciar sesión."
-    case "RATE_LIMITED":
-    case "RATE_LIMIT_EXCEEDED":
-      return "Demasiadas solicitudes de verificación. Inténtalo más tarde."
-    default:
-      return fallback
-  }
-}
 
 type ResendUiState =
   | { status: "idle" }
@@ -65,17 +54,13 @@ function RegisterSuccessNotice({
       const text = res.message?.trim()
       setResendState({
         status: "success",
-        message: text || RESEND_SUCCESS_FALLBACK,
+        message: text || RESEND_VERIFICATION_NEUTRAL_SUCCESS,
       })
     } catch (error) {
       if (error instanceof ApiError) {
-        const parsed = parseApiErrorBody(error.body)
-        const code = parsed?.error.code ?? ""
-        const fallback =
-          parsed?.error.message ?? `No se pudo reenviar el correo (${error.status}).`
         setResendState({
           status: "error",
-          message: resendVerificationUserMessage(code, fallback),
+          message: resendVerificationErrorFromApiError(error),
         })
         return
       }

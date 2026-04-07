@@ -59,7 +59,7 @@ export interface ResendVerificationRequest {
   email: string
 }
 
-/** 200: `{ "message": "If the email exists, a verification link has been sent" }` */
+/** 200: cuerpo con `message` neutral (no revela si el email existe). */
 export interface ResendVerificationResponse {
   message: string
 }
