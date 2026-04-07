@@ -1,29 +1,15 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { MailCheck } from "lucide-react"
+import { ConfirmEmailForm } from "@/features/auth/components/confirm-email-form"
 
-export default function ConfirmEmailPage() {
-  return (
-    <div className="rounded-xl border bg-card p-8 shadow-sm text-center">
-      <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-primary/10">
-        <MailCheck className="size-8 text-primary" />
-      </div>
+type ConfirmEmailPageProps = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>
+}
 
-      <h2 className="text-xl font-semibold">Confirma tu correo</h2>
-      <p className="mt-2 text-sm text-muted-foreground">
-        Hemos enviado un enlace de verificación a tu correo electrónico.
-        Revisa tu bandeja de entrada y haz clic en el enlace para activar tu
-        cuenta.
-      </p>
+export default async function ConfirmEmailPage({
+  searchParams,
+}: ConfirmEmailPageProps) {
+  const resolved = searchParams ? await searchParams : undefined
+  const emailParam = resolved?.email
+  const initialEmail = typeof emailParam === "string" ? emailParam : undefined
 
-      <div className="mt-8 space-y-3">
-        <Button variant="outline" className="w-full">
-          Reenviar correo de verificación
-        </Button>
-        <Button variant="link" size="sm" asChild>
-          <Link href="/login">Volver al inicio de sesión</Link>
-        </Button>
-      </div>
-    </div>
-  )
+  return <ConfirmEmailForm initialEmail={initialEmail ?? ""} />
 }

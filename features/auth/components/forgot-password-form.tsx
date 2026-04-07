@@ -2,10 +2,18 @@
 
 import Link from "next/link"
 import { useState } from "react"
-import { ArrowLeft, Loader2 } from "lucide-react"
+import { ArrowLeft, KeyRound, Loader2, Mail } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { AuthFormAlternateAction } from "@/features/auth/components/auth-form-footer"
+import {
+  AuthFormErrorAlert,
+  AuthFormSuccessAlert,
+} from "@/features/auth/components/auth-form-feedback"
+import { AuthFormHeader } from "@/features/auth/components/auth-form-header"
+import { AuthFormShell } from "@/features/auth/components/auth-form-shell"
+import { AuthIconInput } from "@/features/auth/components/auth-icon-input"
+import { rateLimitUserMessage } from "@/features/auth/lib/rate-limit-message"
 import { requestPasswordReset } from "@/features/auth/services/auth"
 import { ApiError, parseApiErrorBody } from "@/lib/api-client"
 import { ROUTES } from "@/lib/constants"
@@ -19,16 +27,6 @@ type ForgotUiState =
   | { status: "loading" }
   | { status: "success"; message: string }
   | { status: "error"; message: string }
-
-function rateLimitUserMessage(retryAfter?: string | null): string {
-  if (retryAfter) {
-    const seconds = Number.parseInt(retryAfter, 10)
-    if (!Number.isNaN(seconds) && seconds > 0) {
-      return `Demasiadas solicitudes. Vuelve a intentarlo en ${seconds} segundos.`
-    }
-  }
-  return "Demasiadas solicitudes. Espera un momento e inténtalo de nuevo."
-}
 
 export function ForgotPasswordForm() {
   const [state, setState] = useState<ForgotUiState>({ status: "idle" })
@@ -74,39 +72,32 @@ export function ForgotPasswordForm() {
   const showForm = state.status === "idle" || state.status === "loading"
 
   return (
-    <div className="rounded-xl border bg-card p-8 shadow-sm">
-      <div className="mb-6 text-center">
-        <h2 className="text-xl font-semibold">Recuperar contraseña</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Te enviaremos un enlace para restablecer tu contraseña
-        </p>
-      </div>
+    <AuthFormShell>
+      <AuthFormHeader
+        eyebrow={{ icon: KeyRound, label: "Recuperación segura" }}
+        title="Recuperar contraseña"
+        description="Te enviaremos un enlace para restablecer tu contraseña"
+      />
 
       {state.status === "success" ? (
-        <p
-          className="rounded-md bg-green-50 p-3 text-sm text-green-800 dark:bg-green-950 dark:text-green-200"
-          role="status"
-        >
-          {state.message}
-        </p>
+        <AuthFormSuccessAlert>{state.message}</AuthFormSuccessAlert>
       ) : null}
 
       {state.status === "error" ? (
-        <p className="mb-4 text-sm text-destructive" role="alert">
-          {state.message}
-        </p>
+        <AuthFormErrorAlert className="mb-4">{state.message}</AuthFormErrorAlert>
       ) : null}
 
       {showForm ? (
-        <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
+        <form onSubmit={(e) => void handleSubmit(e)} className="space-y-5">
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium">
               Correo electrónico
             </label>
-            <Input
+            <AuthIconInput
               id="email"
               name="email"
               type="email"
+              icon={Mail}
               autoComplete="email"
               placeholder="tu@email.com"
               required
@@ -114,7 +105,11 @@ export function ForgotPasswordForm() {
             />
           </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button
+            type="submit"
+            className="h-10 w-full cursor-pointer shadow-sm"
+            disabled={isLoading}
+          >
             {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
             Enviar enlace de recuperación
           </Button>
@@ -126,25 +121,26 @@ export function ForgotPasswordForm() {
           <Button
             type="button"
             variant="secondary"
-            className="w-full"
+            className="h-10 w-full cursor-pointer shadow-sm"
             onClick={() => setState({ status: "idle" })}
           >
             Enviar otro correo
           </Button>
-          <Button variant="outline" className="w-full" asChild>
+          <Button variant="outline" className="h-10 w-full cursor-pointer" asChild>
             <Link href={ROUTES.login}>Ir al inicio de sesión</Link>
           </Button>
         </div>
       ) : null}
 
-      <div className="mt-6 text-center">
-        <Button variant="link" size="sm" asChild>
-          <Link href={ROUTES.login}>
-            <ArrowLeft className="mr-1.5 size-4" />
-            Volver al inicio de sesión
-          </Link>
-        </Button>
-      </div>
-    </div>
+      <AuthFormAlternateAction>
+        <Link
+          href={ROUTES.login}
+          className="inline-flex items-center font-medium text-foreground hover:underline"
+        >
+          <ArrowLeft className="mr-1.5 size-4" />
+          Volver al inicio de sesión
+        </Link>
+      </AuthFormAlternateAction>
+    </AuthFormShell>
   )
 }

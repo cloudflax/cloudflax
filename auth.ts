@@ -2,14 +2,13 @@ import NextAuth from "next-auth"
 import { ApiError } from "@/lib/api-client"
 import { AUTH_POLICY } from "@/lib/constants"
 import Credentials from "next-auth/providers/credentials"
+import { decodeAccessTokenIdentity } from "@/features/auth/lib/decode-access-token-payload"
+import {
+  throwFromLoginApiError,
+  throwInvalidAccessTokenPayload,
+} from "@/features/auth/lib/login-credentials-error"
 import { trackAuthMetric } from "@/features/auth/services/telemetry"
 import { loginUser, refreshAccessToken } from "@/features/auth/services/auth"
-
-function decodeJwtPayload(token: string): Record<string, unknown> {
-  const base64 = token.split(".")[1]
-  const json = Buffer.from(base64, "base64url").toString("utf-8")
-  return JSON.parse(json) as Record<string, unknown>
-}
 
 function hasTokenExpired(expiresAt?: string) {
   if (!expiresAt) return true
@@ -70,17 +69,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         try {
           const res = await loginUser({ email, password })
           const { access_token, refresh_token, expires_at } = res.data
-          const payload = decodeJwtPayload(access_token)
+          const identity = decodeAccessTokenIdentity(access_token)
+          if (!identity) {
+            throwInvalidAccessTokenPayload()
+          }
 
           return {
-            id: payload.user_id as string,
-            email: payload.email as string,
+            id: identity.userId,
+            email: identity.email,
             accessToken: access_token,
             refreshToken: refresh_token,
             expiresAt: expires_at,
           }
         } catch (error) {
-          if (error instanceof ApiError) return null
+          if (error instanceof ApiError) throwFromLoginApiError(error)
           throw error
         }
       },

@@ -1,6 +1,21 @@
 import Link from "next/link"
+import {
+  ArrowRight,
+  BarChart3,
+  Bot,
+  ContactRound,
+  LayoutDashboard,
+  Package,
+  Share2,
+  ShieldCheck,
+  ShoppingBag,
+  Sparkles,
+  Store,
+  Truck,
+  Users,
+} from "lucide-react"
+
 import { Button } from "@/components/ui/button"
-import { ShoppingBag, LayoutDashboard } from "lucide-react"
 
 export default function AuthLayout({
   children,
@@ -8,30 +23,112 @@ export default function AuthLayout({
   children: React.ReactNode
 }>) {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center bg-muted/40 px-4 py-12">
-      <div className="mb-8 text-center">
-        <h1 className="text-2xl font-bold tracking-tight">Cloudflax</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Plataforma de comercio electrónico
-        </p>
+    <div className="relative min-h-svh overflow-hidden bg-muted/30 px-4 py-10 lg:px-8 lg:py-14">
+      <div className="pointer-events-none absolute left-1/2 top-0 h-64 w-[36rem] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
+
+      <div className="relative mx-auto grid w-full max-w-6xl items-stretch gap-6 lg:grid-cols-2">
+        <aside className="hidden px-4 py-6 lg:flex lg:flex-col lg:items-center lg:justify-between lg:text-center">
+          <div className="w-full max-w-md">
+            <div className="inline-flex items-center justify-center gap-2 text-sm font-semibold text-primary">
+              <Store className="size-4 shrink-0" />
+              Comercio y operaciones, conectados
+            </div>
+            <h1 className="mt-5 text-3xl font-bold leading-tight">
+              Gestiona tu negocio con una experiencia fluida y segura
+            </h1>
+            <p className="mt-4 text-sm text-muted-foreground">
+              Accede al panel y administra productos, pedidos y clientes en un
+              solo lugar
+            </p>
+          </div>
+
+          <div
+            className="flex w-full min-w-0 min-h-[clamp(16rem,42vh,34rem)] flex-1 flex-col items-center justify-center py-6"
+            aria-hidden
+          >
+            <div className="relative aspect-square w-full max-w-[22rem] shrink-0 lg:max-w-[25.5rem]">
+              <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center text-primary">
+                <LayoutDashboard className="size-10 lg:size-12" strokeWidth={1.45} />
+              </div>
+
+              {/* Octágono regular (R≈31 vb): métricas, redes, envíos, clientes, tienda, CRM, pedidos, IA */}
+              <div className="absolute left-1/2 top-[19%] flex -translate-x-1/2 -translate-y-1/2 items-center justify-center text-primary/88">
+                <BarChart3 className="size-6 lg:size-7" strokeWidth={1.45} />
+              </div>
+              <div className="absolute left-[72%] top-[28.1%] flex -translate-x-1/2 -translate-y-1/2 items-center justify-center text-primary/88">
+                <Share2 className="size-6 lg:size-7" strokeWidth={1.45} />
+              </div>
+              <div className="absolute left-[81%] top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center text-primary/88">
+                <Truck className="size-6 lg:size-7" strokeWidth={1.45} />
+              </div>
+              <div className="absolute left-[72%] top-[72%] flex -translate-x-1/2 -translate-y-1/2 items-center justify-center text-primary/88">
+                <Users className="size-6 lg:size-7" strokeWidth={1.45} />
+              </div>
+              <div className="absolute left-1/2 top-[81%] flex -translate-x-1/2 -translate-y-1/2 items-center justify-center text-primary/88">
+                <ShoppingBag className="size-6 lg:size-7" strokeWidth={1.45} />
+              </div>
+              <div className="absolute left-[28.1%] top-[72%] flex -translate-x-1/2 -translate-y-1/2 items-center justify-center text-primary/88">
+                <ContactRound className="size-6 lg:size-7" strokeWidth={1.45} />
+              </div>
+              <div className="absolute left-[19%] top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center text-primary/88">
+                <Package className="size-6 lg:size-7" strokeWidth={1.45} />
+              </div>
+              <div className="absolute left-[28.1%] top-[28.1%] flex -translate-x-1/2 -translate-y-1/2 items-center justify-center text-primary/88">
+                <Bot className="size-6 lg:size-7" strokeWidth={1.45} />
+              </div>
+            </div>
+          </div>
+
+          <div className="w-full max-w-md space-y-3 text-muted-foreground">
+            <div className="flex items-center justify-center gap-2.5 text-sm">
+              <ShieldCheck className="size-4 shrink-0 text-primary" />
+              Protección de sesión y credenciales
+            </div>
+            <div className="flex items-center justify-center gap-2.5 text-sm">
+              <LayoutDashboard className="size-4 shrink-0 text-primary" />
+              Acceso rápido al dashboard de operaciones
+            </div>
+            <div className="flex items-center justify-center gap-2.5 text-sm">
+              <ShoppingBag className="size-4 shrink-0 text-primary" />
+              Gestión conectada con la tienda
+            </div>
+          </div>
+        </aside>
+
+        <div className="flex flex-col">
+          <div className="mb-6 flex justify-center sm:justify-start">
+            <div className="inline-flex items-center gap-1.5 text-sm font-semibold tracking-tight">
+              <Sparkles className="size-4 text-primary" />
+              Cloudflax
+            </div>
+          </div>
+
+          <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center">
+            {children}
+          </div>
+
+          <nav
+            className="mt-10 flex flex-col items-center gap-2 sm:mt-8"
+            aria-label="Navegación secundaria"
+          >
+            <Button
+              variant="outline"
+              size="lg"
+              className="h-11 min-w-[min(100%,17.5rem)] cursor-pointer rounded-full border-border/80 bg-background/90 px-6 shadow-sm backdrop-blur-sm transition-all hover:border-primary/35 hover:bg-background hover:shadow-md"
+              asChild
+            >
+              <Link href="/" className="gap-2.5">
+                <ShoppingBag className="size-4 text-primary" />
+                <span className="font-semibold">Ir a la tienda</span>
+                <ArrowRight className="size-4 text-muted-foreground transition-transform duration-200 group-hover/button:translate-x-0.5" />
+              </Link>
+            </Button>
+            <p className="max-w-xs text-center text-xs leading-relaxed text-muted-foreground">
+              Explora productos y ofertas desde la tienda
+            </p>
+          </nav>
+        </div>
       </div>
-
-      <div className="w-full max-w-md">{children}</div>
-
-      <nav className="mt-10 flex items-center gap-3">
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/">
-            <ShoppingBag className="mr-1.5 size-4" />
-            Tienda
-          </Link>
-        </Button>
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/dashboard">
-            <LayoutDashboard className="mr-1.5 size-4" />
-            Dashboard
-          </Link>
-        </Button>
-      </nav>
     </div>
   )
 }

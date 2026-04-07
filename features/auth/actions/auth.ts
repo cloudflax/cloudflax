@@ -1,7 +1,8 @@
 "use server"
 
 import { auth, signIn, signOut } from "@/auth"
-import { AuthError } from "next-auth"
+import { AuthError, CredentialsSignin } from "next-auth"
+import { rateLimitUserMessage } from "@/features/auth/lib/rate-limit-message"
 import { registerUser } from "@/features/auth/services/auth"
 import { logout as backendLogout } from "@/features/auth/services/logout"
 import { invalidateAuthenticatedUserProfileCache } from "@/features/auth/services/session"
@@ -19,13 +20,24 @@ export async function login(
       redirectTo: "/dashboard",
     })
   } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case "CredentialsSignin":
-          return "Credenciales inválidas."
+    if (error instanceof CredentialsSignin) {
+      switch (error.code) {
+        case "email_not_verified":
+          return "Verifica tu correo antes de iniciar sesión. Revisa tu bandeja o solicita un nuevo enlace desde la página de registro o de confirmación."
+        case "rate_limited": {
+          const r = error.cause?.retryAfter
+          const retryAfter =
+            typeof r === "string" || r == null ? r : String(r)
+          return rateLimitUserMessage(retryAfter)
+        }
+        case "invalid_session":
+          return "No pudimos completar debido a un problema técnico. Inténtalo de nuevo."
         default:
-          return "Ocurrió un error inesperado."
+          return "Correo o contraseña incorrectos. Revísalos e inténtalo de nuevo."
       }
+    }
+    if (error instanceof AuthError) {
+      return "Ocurrió un error inesperado."
     }
     throw error
   }

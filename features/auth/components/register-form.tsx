@@ -1,29 +1,27 @@
 "use client"
 
 import Link from "next/link"
-import { Loader2 } from "lucide-react"
+import { Loader2, Lock, Mail, UserPlus, UserRound } from "lucide-react"
 import { useActionState, useState } from "react"
+
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { AuthFormAlternateAction } from "@/features/auth/components/auth-form-footer"
+import {
+  AuthFormErrorAlert,
+  AuthFormFieldError,
+  AuthFormSuccessAlert,
+} from "@/features/auth/components/auth-form-feedback"
+import { AuthFormHeader } from "@/features/auth/components/auth-form-header"
+import { AuthFormShell } from "@/features/auth/components/auth-form-shell"
+import { AuthIconInput } from "@/features/auth/components/auth-icon-input"
 import { register } from "@/features/auth/actions/auth"
+import {
+  RESEND_VERIFICATION_NEUTRAL_SUCCESS,
+  resendVerificationErrorFromApiError,
+} from "@/features/auth/lib/resend-verification"
 import { resendVerificationEmail } from "@/features/auth/services/auth"
-import { ApiError, parseApiErrorBody } from "@/lib/api-client"
+import { ApiError } from "@/lib/api-client"
 import { ROUTES } from "@/lib/constants"
-
-const RESEND_SUCCESS_FALLBACK =
-  "If the email exists, a verification link has been sent"
-
-function resendVerificationUserMessage(code: string, fallback: string): string {
-  switch (code) {
-    case "EMAIL_ALREADY_VERIFIED":
-      return "Este correo ya está verificado. Puedes iniciar sesión."
-    case "RATE_LIMITED":
-    case "RATE_LIMIT_EXCEEDED":
-      return "Demasiadas solicitudes de verificación. Inténtalo más tarde."
-    default:
-      return fallback
-  }
-}
 
 type ResendUiState =
   | { status: "idle" }
@@ -36,6 +34,9 @@ interface RegisterSuccessNoticeProps {
   registeredEmail?: string
   isPendingForm: boolean
 }
+
+const successLinkClass =
+  "font-medium text-emerald-900 underline underline-offset-4 hover:underline dark:text-emerald-50"
 
 function RegisterSuccessNotice({
   message,
@@ -53,17 +54,13 @@ function RegisterSuccessNotice({
       const text = res.message?.trim()
       setResendState({
         status: "success",
-        message: text || RESEND_SUCCESS_FALLBACK,
+        message: text || RESEND_VERIFICATION_NEUTRAL_SUCCESS,
       })
     } catch (error) {
       if (error instanceof ApiError) {
-        const parsed = parseApiErrorBody(error.body)
-        const code = parsed?.error.code ?? ""
-        const fallback =
-          parsed?.error.message ?? `No se pudo reenviar el correo (${error.status}).`
         setResendState({
           status: "error",
-          message: resendVerificationUserMessage(code, fallback),
+          message: resendVerificationErrorFromApiError(error),
         })
         return
       }
@@ -75,7 +72,7 @@ function RegisterSuccessNotice({
   }
 
   return (
-    <div className="mb-4 rounded-md bg-green-50 p-3 text-sm text-green-800 dark:bg-green-950 dark:text-green-200">
+    <AuthFormSuccessAlert className="mb-4">
       <p className="flex flex-wrap items-center gap-x-1 gap-y-2">
         <span>{message}</span>
         {registeredEmail ? (
@@ -86,7 +83,7 @@ function RegisterSuccessNotice({
             <Button
               type="button"
               variant="link"
-              className="h-auto min-h-0 p-0 text-sm font-medium text-green-800 underline-offset-4 hover:text-green-900 hover:underline dark:text-green-200 dark:hover:text-green-100"
+              className={`h-auto min-h-0 p-0 text-sm ${successLinkClass}`}
               disabled={resendState.status === "loading" || isPendingForm}
               aria-busy={resendState.status === "loading"}
               onClick={() => void handleResendVerification()}
@@ -103,26 +100,38 @@ function RegisterSuccessNotice({
                 "Reenviar correo de verificación"
               )}
             </Button>
+            <span className="hidden sm:inline" aria-hidden>
+              ·
+            </span>
+            <Link
+              href={`${ROUTES.confirmEmail}?email=${encodeURIComponent(registeredEmail)}`}
+              className={successLinkClass}
+            >
+              Instrucciones y reenvío
+            </Link>
           </>
         ) : null}
         <span className="hidden sm:inline" aria-hidden>
           ·
         </span>
-        <Link href={ROUTES.login} className="font-medium underline underline-offset-4">
+        <Link href={ROUTES.login} className={successLinkClass}>
           Ir al login
         </Link>
       </p>
       {resendState.status === "success" ? (
-        <p className="mt-2 text-xs text-green-900/90 dark:text-green-100/90" role="status">
+        <p
+          className="mt-2 text-xs text-emerald-900/90 dark:text-emerald-50/90"
+          role="status"
+        >
           {resendState.message}
         </p>
       ) : null}
       {resendState.status === "error" ? (
-        <p className="mt-2 text-xs font-medium text-red-900 dark:text-red-200" role="alert">
+        <p className="mt-2 text-xs font-medium text-destructive" role="alert">
           {resendState.message}
         </p>
       ) : null}
-    </div>
+    </AuthFormSuccessAlert>
   )
 }
 
@@ -130,13 +139,12 @@ export function RegisterForm() {
   const [state, formAction, isPending] = useActionState(register, undefined)
 
   return (
-    <div className="rounded-xl border bg-card p-8 shadow-sm">
-      <div className="mb-6 text-center">
-        <h2 className="text-xl font-semibold">Crear cuenta</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Completa el formulario para registrarte
-        </p>
-      </div>
+    <AuthFormShell>
+      <AuthFormHeader
+        eyebrow={{ icon: UserPlus, label: "Nueva cuenta" }}
+        title="Crear cuenta"
+        description="Completa el formulario para registrarte"
+      />
 
       {state?.success && (
         <RegisterSuccessNotice
@@ -147,78 +155,84 @@ export function RegisterForm() {
         />
       )}
 
-      {state && !state.success && state.message && (
-        <p className="mb-4 text-sm text-destructive">{state.message}</p>
-      )}
+      {state && !state.success && state.message ? (
+        <AuthFormErrorAlert className="mb-4">{state.message}</AuthFormErrorAlert>
+      ) : null}
 
-      <form action={formAction} className="space-y-4">
+      <form action={formAction} className="space-y-5">
         <div className="space-y-2">
           <label htmlFor="name" className="text-sm font-medium">
             Nombre
           </label>
-          <Input
+          <AuthIconInput
             id="name"
             name="name"
+            icon={UserRound}
             placeholder="Juan Pérez"
             required
             aria-invalid={!!state?.errors?.name}
             aria-describedby={state?.errors?.name ? "name-error" : undefined}
           />
-          {state?.errors?.name && (
-            <p id="name-error" className="text-xs text-destructive" role="alert">
+          {state?.errors?.name ? (
+            <AuthFormFieldError id="name-error">
               {state.errors.name[0]}
-            </p>
-          )}
+            </AuthFormFieldError>
+          ) : null}
         </div>
 
         <div className="space-y-2">
           <label htmlFor="email" className="text-sm font-medium">
             Correo electrónico
           </label>
-          <Input
+          <AuthIconInput
             id="email"
             name="email"
             type="email"
+            icon={Mail}
             placeholder="tu@email.com"
             required
             aria-invalid={!!state?.errors?.email}
             aria-describedby={state?.errors?.email ? "email-error" : undefined}
           />
-          {state?.errors?.email && (
-            <p id="email-error" className="text-xs text-destructive" role="alert">
+          {state?.errors?.email ? (
+            <AuthFormFieldError id="email-error">
               {state.errors.email[0]}
-            </p>
-          )}
+            </AuthFormFieldError>
+          ) : null}
         </div>
 
         <div className="space-y-2">
           <label htmlFor="password" className="text-sm font-medium">
             Contraseña
           </label>
-          <Input
+          <AuthIconInput
             id="password"
             name="password"
             type="password"
+            icon={Lock}
             placeholder="••••••••"
             required
             aria-invalid={!!state?.errors?.password}
-            aria-describedby={state?.errors?.password ? "password-error" : undefined}
+            aria-describedby={
+              state?.errors?.password ? "password-error" : undefined
+            }
           />
-          {state?.errors?.password && (
-            <p id="password-error" className="text-xs text-destructive" role="alert">
+          {state?.errors?.password ? (
+            <AuthFormFieldError id="password-error">
               {state.errors.password[0]}
-            </p>
-          )}
+            </AuthFormFieldError>
+          ) : null}
         </div>
 
         <div className="space-y-2">
           <label htmlFor="confirmPassword" className="text-sm font-medium">
             Confirmar contraseña
           </label>
-          <Input
+          <AuthIconInput
             id="confirmPassword"
             name="confirmPassword"
             type="password"
+            icon={Lock}
             placeholder="••••••••"
             required
             aria-invalid={!!state?.errors?.confirmPassword}
@@ -226,24 +240,24 @@ export function RegisterForm() {
               state?.errors?.confirmPassword ? "confirmPassword-error" : undefined
             }
           />
-          {state?.errors?.confirmPassword && (
-            <p
-              id="confirmPassword-error"
-              className="text-xs text-destructive"
-              role="alert"
-            >
+          {state?.errors?.confirmPassword ? (
+            <AuthFormFieldError id="confirmPassword-error">
               {state.errors.confirmPassword[0]}
-            </p>
-          )}
+            </AuthFormFieldError>
+          ) : null}
         </div>
 
-        <Button type="submit" className="w-full" disabled={isPending}>
+        <Button
+          type="submit"
+          className="h-10 w-full cursor-pointer shadow-sm"
+          disabled={isPending}
+        >
           {isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
           Crear cuenta
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-muted-foreground">
+      <AuthFormAlternateAction>
         ¿Ya tienes cuenta?{" "}
         <Link
           href={ROUTES.login}
@@ -251,7 +265,7 @@ export function RegisterForm() {
         >
           Inicia sesión
         </Link>
-      </p>
-    </div>
+      </AuthFormAlternateAction>
+    </AuthFormShell>
   )
 }

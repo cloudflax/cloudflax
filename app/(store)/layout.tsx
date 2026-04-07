@@ -45,20 +45,12 @@ export default async function StoreLayout({
                 </form>
               </>
             ) : (
-              <>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link href="/login">
-                    <UserCircle className="mr-1.5 size-4" />
-                    Iniciar sesión
-                  </Link>
-                </Button>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link href="/dashboard">
-                    <LayoutDashboard className="mr-1.5 size-4" />
-                    Dashboard
-                  </Link>
-                </Button>
-              </>
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/login">
+                  <UserCircle className="mr-1.5 size-4" />
+                  Iniciar sesión
+                </Link>
+              </Button>
             )}
           </nav>
         </div>
