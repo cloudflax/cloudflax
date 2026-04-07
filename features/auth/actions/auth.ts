@@ -12,6 +12,27 @@ import { invalidateAuthenticatedUserProfileCache } from "@/features/auth/service
 import { ApiError, parseApiErrorBody } from "@/lib/api-client"
 import type { RegisterFormState } from "@/features/auth/types"
 
+/**
+ * Auth.js throws CredentialsSignin from authorize(). Relying only on `instanceof`
+ * can fail across module boundaries; `name` and `type` are still set by Auth.js.
+ */
+function asCredentialsSigninError(error: unknown): CredentialsSignin | null {
+  if (error instanceof CredentialsSignin) {
+    return error
+  }
+  if (error instanceof AuthError && error.type === "CredentialsSignin") {
+    return error as CredentialsSignin
+  }
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    (error as Error).name === "CredentialsSignin"
+  ) {
+    return error as CredentialsSignin
+  }
+  return null
+}
+
 export async function login(
   _prevState: string | undefined,
   formData: FormData,
@@ -23,18 +44,19 @@ export async function login(
       redirectTo: "/dashboard",
     })
   } catch (error) {
-    if (error instanceof CredentialsSignin) {
-      switch (error.code) {
+    const creds = asCredentialsSigninError(error)
+    if (creds) {
+      switch (creds.code ?? "credentials") {
         case "email_not_verified":
           return "Verifica tu correo antes de iniciar sesión. Revisa tu bandeja o solicita un nuevo enlace desde la página de registro o de confirmación."
         case "credentials_locked": {
-          const r = error.cause?.retryAfter
+          const r = creds.cause?.retryAfter
           const retryAfter =
             typeof r === "string" || r == null ? r : String(r)
           return credentialsLockUserMessage(retryAfter)
         }
         case "rate_limited": {
-          const r = error.cause?.retryAfter
+          const r = creds.cause?.retryAfter
           const retryAfter =
             typeof r === "string" || r == null ? r : String(r)
           return rateLimitUserMessage(retryAfter)

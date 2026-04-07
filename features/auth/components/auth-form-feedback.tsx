@@ -18,7 +18,7 @@ export function AuthFormErrorAlert({
       id={id}
       role={role}
       className={cn(
-        "rounded-md border border-destructive/20 bg-destructive/10 px-3 py-2 text-sm text-destructive",
+        "whitespace-pre-line rounded-md border border-destructive/20 bg-destructive/10 px-3 py-2.5 text-sm leading-relaxed text-destructive",
         className,
       )}
     >
