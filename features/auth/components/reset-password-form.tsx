@@ -12,12 +12,14 @@ import { AuthFormShell } from "@/features/auth/components/auth-form-shell"
 import { AuthFormStatusPanel } from "@/features/auth/components/auth-form-status"
 import { AuthIconInput } from "@/features/auth/components/auth-icon-input"
 import { rateLimitUserMessage } from "@/features/auth/lib/rate-limit-message"
+import {
+  RESET_PASSWORD_MAX_LENGTH,
+  RESET_PASSWORD_MIN_LENGTH,
+  validateResetPasswordPair,
+} from "@/features/auth/lib/reset-password-validation"
 import { resetPassword } from "@/features/auth/services/auth"
 import { ApiError, parseApiErrorBody } from "@/lib/api-client"
 import { ROUTES } from "@/lib/constants"
-
-const PASSWORD_MIN = 8
-const PASSWORD_MAX = 72
 
 type ResetUiState =
   | { status: "idle" }
@@ -27,19 +29,6 @@ type ResetUiState =
 
 interface ResetPasswordFormProps {
   token: string | undefined
-}
-
-function validatePasswords(
-  password: string,
-  confirm: string,
-): string | null {
-  if (password.length < PASSWORD_MIN || password.length > PASSWORD_MAX) {
-    return `La contraseña debe tener entre ${PASSWORD_MIN} y ${PASSWORD_MAX} caracteres.`
-  }
-  if (password !== confirm) {
-    return "Las contraseñas no coinciden."
-  }
-  return null
 }
 
 export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
@@ -57,7 +46,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
     const password = (fd.get("password") as string) ?? ""
     const confirmPassword = (fd.get("confirmPassword") as string) ?? ""
 
-    const validation = validatePasswords(password, confirmPassword)
+    const validation = validateResetPasswordPair(password, confirmPassword)
     if (validation) {
       setFieldError(validation)
       return
@@ -171,13 +160,14 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
             autoComplete="new-password"
             placeholder="••••••••"
             required
-            minLength={PASSWORD_MIN}
-            maxLength={PASSWORD_MAX}
+            minLength={RESET_PASSWORD_MIN_LENGTH}
+            maxLength={RESET_PASSWORD_MAX_LENGTH}
             disabled={isLoading}
             aria-invalid={Boolean(fieldError)}
           />
           <p className="text-xs text-muted-foreground">
-            Entre {PASSWORD_MIN} y {PASSWORD_MAX} caracteres
+            Entre {RESET_PASSWORD_MIN_LENGTH} y {RESET_PASSWORD_MAX_LENGTH}{" "}
+            caracteres
           </p>
         </div>
 
@@ -193,8 +183,8 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
             autoComplete="new-password"
             placeholder="••••••••"
             required
-            minLength={PASSWORD_MIN}
-            maxLength={PASSWORD_MAX}
+            minLength={RESET_PASSWORD_MIN_LENGTH}
+            maxLength={RESET_PASSWORD_MAX_LENGTH}
             disabled={isLoading}
           />
         </div>

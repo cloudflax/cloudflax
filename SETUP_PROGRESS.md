@@ -61,6 +61,32 @@ Tras recibir el correo, el usuario abre el enlace, establece una contraseña vá
 - **Body:** `{ "token": string, "password": string }`
 - **200:** éxito; UI muestra confirmación y enlace a login.
 - **422 (u otro acordado):** token inválido o expirado → mensaje claro; sin datos sensibles.
+- **429:** opcional; el cliente puede mostrar mensaje con `Retry-After` si el API lo envía (mismo patrón que forgot).
+
+### `GET /auth/verify-email` (relacionado con CA-5)
+
+- **Query:** `token` (string).
+- **Llamada desde frontend:** `GET {BACKEND_URL}/auth/verify-email?token=…` vía `verifyEmail()` en `features/auth/services/auth.ts`; la página RSC `app/(auth)/auth/verify-email/page.tsx` muestra éxito o error (`ApiError` + `parseApiErrorBody` o fallback).
+
+**Alineación pendiente con backend — idempotencia y re-ejecución**
+
+| Tema | Pregunta para el API / equipo backend | Acordado (rellenar tras alinear) |
+|------|---------------------------------------|----------------------------------|
+| Mismo enlace abierto otra vez cuando el correo **ya** estaba verificado | ¿Respuesta `200` idempotente con mensaje coherente? ¿Otro status (`409`, `422`, …)? ¿Efectos secundarios no deseados al repetir? | |
+| Token inválido vs expirado | ¿Se diferencia en HTTP o en cuerpo/mensaje? ¿Qué debe mostrar la UI en cada caso? | |
+
+### Política del token enviado en el correo de reset
+
+El enlace al usuario usa `token` en query en el frontend (`/auth/reset-password?token=…`); el valor lo emite y valida el backend.
+
+| Tema | Pregunta para el API / equipo backend | Acordado (rellenar tras alinear) |
+|------|---------------------------------------|----------------------------------|
+| Caducidad (TTL) | ¿Cuánto tiempo es válido el token desde el envío del correo? | |
+| Uso del token | ¿Un único `POST /auth/reset-password` exitoso invalida el token? ¿Reintentos con el mismo token tras error (p. ej. validación de contraseña)? | |
+| Varios correos / varios tokens | ¿Un nuevo `POST /auth/forgot-password` invalida tokens anteriores del mismo usuario? | |
+| Abuso y límites | ¿Hay rate limiting u otras reglas además del `429` ya contemplado en forgot? ¿Alguno específico en reset? | |
+
+**Registro:** cuando el equipo complete las columnas *Acordado*, anotar **fecha** y, si aplica, enlace a issue/ADR; entonces se puede marcar el ítem *Seguimiento backend* de la Fase B.
 
 ---
 
@@ -69,6 +95,7 @@ Tras recibir el correo, el usuario abre el enlace, establece una contraseña vá
 | Ruta / artefacto | Rol |
 |------------------|-----|
 | `/forgot-password` | Formulario forgot + estados |
+| `/auth/verify-email` | Verificación de correo con `token` en query (RSC + `verifyEmail`) |
 | `/auth/reset-password` | Token en query + formulario reset |
 | `features/auth/types.ts` | Tipos forgot / reset |
 | `features/auth/services/auth.ts` | `requestPasswordReset`, `resetPassword` |
@@ -99,12 +126,29 @@ Antes de pushear código de una fase, ejecuta al menos lo que toque el cambio (`
 - [x] `/forgot-password`: submit integrado, mensaje neutral, manejo de `429`.
 - [x] `/auth/reset-password`: página + formulario + validación 8–72 y confirmación.
 - [x] `proxy.ts`: `ROUTES.resetPassword` y entrada en `matcher`.
-- [ ] **QA manual:** flujo desde email real (staging): forgot → correo → reset → login.
+- [ ] **QA manual (entorno real):** Probar en **staging** (u otro entorno con **correo real**): **forgot → recepción del email → abrir el enlace → reset de contraseña → login.** Hasta que esta verificación esté hecha **y este checkbox marcado**, el ítem sigue abierto para el cierre de spec de la Fase A.
+
+#### Checklist de QA manual (ejecutar en staging o equivalente)
+
+Registrar **entorno** (URL frontend, que `BACKEND_URL` apunte al API correcto) y **email de prueba** con buzón real.
+
+| # | Acción | Resultado esperado (trazado a REQ/CA) |
+|---|--------|----------------------------------------|
+| 1 | Ir a `/forgot-password`, enviar un **email registrado** (trimado). | Mensaje de éxito **neutral**; no indica si el email existe (REQ-2, CA-1). |
+| 2 | Revisar correo. | Llega el mail; el enlace apunta a `{FRONTEND_URL}/auth/reset-password?token=…` (ver sección 1). |
+| 3 | Abrir el enlace (idealmente ventana o perfil limpio). | Formulario de reset; token tomado de query (REQ-3). |
+| 4 | Enviar contraseña nueva **8–72** caracteres y confirmación **coincidente**. | UI de éxito; camino claro a `/login` (REQ-4, REQ-5, REQ-6, CA-2, CA-4). |
+| 5 | Ir a `/login` e iniciar sesión con **la nueva contraseña**. | Sesión correcta (CA-2, alineado con outcome §3). |
+| 6 | *Opcional CA-1:* repetir paso 1 con email **no** registrado. | Mismo mensaje de éxito que en el paso 1. |
+| 7 | *Opcional CA-3 / regresión:* abrir `/auth/reset-password` sin `token` o con token inválido/expirado. | Error comprensible y siguiente paso claro (enlace a forgot o login). |
+| 8 | *Opcional CA-5:* flujo breve de `/auth/verify-email` (enlace válido) y login habitual. | Sin regresiones respecto al comportamiento previo. |
+
+**Cierre:** si todas las filas obligatorias (1–5) pasan, anotar **fecha** y **nota breve** (p. ej. incidencias o “OK”) debajo del checklist y marcar el checkbox **QA manual** de la Fase A.
 
 ### Fase B — Calidad y consistencia (post-core)
 
 - [x] Errores API alineados: `rateLimitUserMessage` compartido (forgot + reset), `verify-email` usa `parseApiErrorBody`; reset trata **429** y fallback con código de estado si no hay cuerpo parseable.
-- [ ] **Seguimiento backend (manual):** idempotencia de `GET` verify-email y límites de uso del token de reset — documentar en contrato de API; no bloquea el cierre funcional del frontend.
+- [ ] **Seguimiento backend (manual):** Completar las tablas *Acordado* en la **sección 5** (`GET /auth/verify-email` y política del token de reset) con lo que defina el API / equipo backend, y registrar fecha o referencia (issue, ADR). Hasta entonces el ítem sigue abierto; la **plantilla** en la sección 5 ya está lista para rellenar.
 
 ---
 
@@ -132,5 +176,7 @@ Antes de pushear código de una fase, ejecuta al menos lo que toque el cambio (`
 
 ## 11. Definición de hecho (DoD)
 
-- Criterios **CA-1…CA-5** verificados en entorno de prueba.
-- Pipeline local del repo: `lint` → `typecheck` → `test` → `build` sin fallos.
+- **CA-1…CA-5** en entorno de prueba: dependen del **QA manual** de la Fase A (flujo completo hasta login) y, donde corresponda, de lo **acordado con backend** (verify-email, límites del token).
+- **Pipeline local del repo:** `lint` → `typecheck` → `test` → `build` sin fallos. En desarrollo habitual suele cumplirse al iterar; para el **cierre formal** de esta spec, ejecutar la secuencia completa una vez antes de marcar el cierre y, si ayuda al equipo, anotar fecha o resultado del QA junto al checklist de la sección 8.
+
+**Resumen de pendientes ejecutables desde frontend / verificación:** lo único que este documento deja como verificación **ejecutable** antes de dar la spec por cerrada es el **QA manual** del flujo completo (y marcar el checkbox o una nota breve al validarlo). El ítem de backend es **coordinación y documentación de contrato**, no código frontend pendiente listado como implementación.
