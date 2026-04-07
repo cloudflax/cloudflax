@@ -100,6 +100,15 @@ function RegisterSuccessNotice({
                 "Reenviar correo de verificación"
               )}
             </Button>
+            <span className="hidden sm:inline" aria-hidden>
+              ·
+            </span>
+            <Link
+              href={`${ROUTES.confirmEmail}?email=${encodeURIComponent(registeredEmail)}`}
+              className={successLinkClass}
+            >
+              Instrucciones y reenvío
+            </Link>
           </>
         ) : null}
         <span className="hidden sm:inline" aria-hidden>
